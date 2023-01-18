@@ -43,7 +43,6 @@
         }
 
         // Method to handle user input and navigate the menu
-        // Method to handle user input and navigate the menu
         public int UseMenu()
         {
             // Declare a variable to store the user's input
