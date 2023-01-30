@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using FoxBank.Models;
 using Npgsql;
 using System.Configuration;
 using System.Data;
