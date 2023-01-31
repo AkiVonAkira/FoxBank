@@ -15,7 +15,7 @@ public class PostgresDataAccess
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
-            var output = cnn.Query<UserModel>("SELECT * FROM user", new DynamicParameters());
+            var output = cnn.Query<UserModel>("SELECT * FROM bank_user", new DynamicParameters());
             return output.ToList();
         }
     }
