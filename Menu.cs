@@ -177,9 +177,9 @@
         {
             List<UserModel> users = PostgresDataAccess.LoadUserModel();
             Console.WriteLine("Enter email & password");
-            Console.WriteLine("Email: ");
+            Console.Write("Email: ");
             string email = Console.ReadLine();
-            Console.WriteLine("Pin: ");
+            Console.Write("Pin: ");
             if (!int.TryParse(Console.ReadLine(), out int pin))
             {
                 Console.WriteLine("You did not enter a number");
