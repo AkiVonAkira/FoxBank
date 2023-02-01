@@ -2,6 +2,8 @@
 {
     internal class Menu
     {
+        internal static int LoggedInUserID { get; set; }
+
         // Declare an array of strings to hold the menu items
         private readonly string[] _menuItems;
         // Declare a variable to keep track of the selected menu item
@@ -142,10 +144,8 @@
                 {
                     // If the selected index is 0 (Sign In)
                     case 0:
-                        // Call the RandomMethod() method
                         //ShowBalance();
-                        Console.WriteLine(PostgresDataAccess.Balance());
-                        Console.ReadKey();
+                        ShowBalanceMenu();
                         break;
                     // If the selected index is 1 (Create New User)
                     case 1:
@@ -183,6 +183,43 @@
             }
         }
 
+        //Method that prints menu for show balance option
+        internal static void ShowBalanceMenu()
+        {
+            // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
+            Menu mainMenu = new Menu(new string[] { "Show balance", "Back" });
+            // Print the menu to the console
+            mainMenu.PrintMenu();
+
+            // Declare a variable to keep track of whether to show the menu or not
+            bool showMenu = true;
+
+            // Loop until the showMenu variable is false
+            while (showMenu)
+            {
+                // Get the selected index from the UseMenu method
+                int index = mainMenu.UseMenu();
+                // Check the selected index
+                switch (index)
+                {
+                    // If the selected index is 0 (Sign In)
+                    case 0:
+                        // Call the RandomMethod() method
+                        ShowBalance();
+                        break;
+                    case 1:
+                        // Set the showMenu variable to false to exit the loop
+                        showMenu = false;
+                        LoggedInMenu();
+                        break;
+                    // If the selected index is none of the above
+                    default:
+                        // Do nothing
+                        break;
+                }
+            }
+        }
+
         //Method to check email and pin when signing in
         internal static void SignIn()
         {
@@ -207,6 +244,7 @@
                 {
                     Login = user.id;
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
+                    LoggedInUserID = user.id;
                     EnterToContinue();
                     //Create if-statement to determine client or admin menu.
                     //if client
@@ -221,6 +259,17 @@
                     return;
                 }
             }
+        }
+
+        internal static void ShowBalance()
+        {
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
+            foreach (AccountModel account in accounts)
+            {
+                Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance}");
+            }
+            Console.ReadLine();
+            EnterToContinue();
         }
 
         internal static void EnterToContinue()

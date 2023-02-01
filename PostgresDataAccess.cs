@@ -24,8 +24,21 @@ public class PostgresDataAccess
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
-            var output = cnn.Query<AccountModel>($"SELECT * FROM bank_account WHERE user_id = 1;", new DynamicParameters());
+            var output = cnn.Query<AccountModel>("SELECT * FROM bank_account", new DynamicParameters());
             return output.ToList();
+        }
+    }
+
+
+    internal static List<AccountModel> LoadUserAccount(int userID)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            {
+                var output = cnn.Query<AccountModel>($@"
+                    SELECT * FROM bank_account WHERE user_id={userID}", new DynamicParameters());
+                return output.ToList();
+            }
         }
     }
 
@@ -33,7 +46,7 @@ public class PostgresDataAccess
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
-            var output = cnn.Query<TransactionModel>("SELECT * FROM transaction", new DynamicParameters());
+            var output = cnn.Query<TransactionModel>("SELECT * FROM bank_transaction", new DynamicParameters());
             return output.ToList();
         }
     }
