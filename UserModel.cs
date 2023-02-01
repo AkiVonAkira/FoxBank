@@ -8,7 +8,6 @@
         public string bank_email { get; set; }
         public int pin_code { get; set; }
         public int role_id { get; set; }
-
         public int branch_id { get; set; }
 
     }
