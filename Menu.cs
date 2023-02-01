@@ -8,7 +8,7 @@
         private readonly string[] _menuItems;
         // Declare a variable to keep track of the selected menu item
         private int _selectedIndex;
-
+        public static int Login { get; set; }
         // Constructor that takes an array of strings as a parameter, 
         // initializes the _menuItems array with the passed in array
         // and sets the initial selected index to 0
@@ -144,11 +144,20 @@
                 {
                     // If the selected index is 0 (Sign In)
                     case 0:
-                        // Call the RandomMethod() method
+                        //ShowBalance();
                         ShowBalanceMenu();
                         break;
                     // If the selected index is 1 (Create New User)
                     case 1:
+                        bool success = Helper.Transaction();
+                        if (success)
+                        {
+                            Console.WriteLine("Transaction compelete");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Transaction Failed, Not Enough Funds");
+                        }
                         // Call the RandomMethod() method
                         //Transfer();
                         break;
@@ -233,6 +242,7 @@
                 counter++;
                 if (user.bank_email.Equals(email) && user.pin_code == pin)
                 {
+                    Login = user.id;
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
                     EnterToContinue();

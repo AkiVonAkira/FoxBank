@@ -50,6 +50,38 @@ public class PostgresDataAccess
             return output.ToList();
         }
     }
+    public static bool MoneyTransfer(int user_id, int from_account_id, int to_account_id, decimal amount)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            try
+            {
+                var output = cnn.Query($@"
+                
+                UPDATE bank_account SET balance = CASE
+                    WHEN id = {from_account_id} AND balance >= {amount} THEN balance - {amount}
+                    WHEN id = {to_account_id} THEN balance + {amount}
+
+                END
+                WHERE id IN ({from_account_id},{to_account_id})", new DynamicParameters());
+            }
+            catch (Npgsql.PostgresException e)
+            {
+                Console.WriteLine(e.MessageText);
+                return false;
+            }
+            return true;
+        }
+    }
+    public static List<BalanceChecker> Balance()
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            var output = cnn.Query<BalanceChecker>("SELECT * FROM bank_account WHERE user_id = 1;", new DynamicParameters());
+            return output.ToList();
+        }
+
+    }
 
     internal static List<BankBranchModel> LoadBankBranchModel()
     {
