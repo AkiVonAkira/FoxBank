@@ -73,15 +73,6 @@ public class PostgresDataAccess
             return true;
         }
     }
-    public static List<BalanceChecker> Balance()
-    {
-        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
-        {
-            var output = cnn.Query<BalanceChecker>("SELECT * FROM bank_account WHERE user_id = 1;", new DynamicParameters());
-            return output.ToList();
-        }
-
-    }
 
     internal static List<BankBranchModel> LoadBankBranchModel()
     {
