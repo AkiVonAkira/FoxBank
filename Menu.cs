@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using System.Data;
+
+namespace FoxBank
 {
     internal class Menu
     {
@@ -145,7 +147,7 @@
                     // If the selected index is 0 (Sign In)
                     case 0:
                         //ShowBalance();
-                        ShowBalanceMenu();
+                        ShowBalance();
                         break;
                     // If the selected index is 1 (Create New User)
                     case 1:
@@ -164,7 +166,7 @@
                     // If the selected index is 2 (Exit)
                     case 2:
                         // Call the RandomMethod() method
-                        //Withdraw();
+                        Withdraw();
                         break;
                     case 3:
                         // Call the RandomMethod() method
@@ -174,43 +176,6 @@
                         // Set the showMenu variable to false to exit the loop
                         showMenu = false;
                         SignInMenu();
-                        break;
-                    // If the selected index is none of the above
-                    default:
-                        // Do nothing
-                        break;
-                }
-            }
-        }
-
-        //Method that prints menu for show balance option
-        internal static void ShowBalanceMenu()
-        {
-            // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Show balance", "Back" });
-            // Print the menu to the console
-            mainMenu.PrintMenu();
-
-            // Declare a variable to keep track of whether to show the menu or not
-            bool showMenu = true;
-
-            // Loop until the showMenu variable is false
-            while (showMenu)
-            {
-                // Get the selected index from the UseMenu method
-                int index = mainMenu.UseMenu();
-                // Check the selected index
-                switch (index)
-                {
-                    // If the selected index is 0 (Sign In)
-                    case 0:
-                        // Call the RandomMethod() method
-                        ShowBalance();
-                        break;
-                    case 1:
-                        // Set the showMenu variable to false to exit the loop
-                        showMenu = false;
-                        LoggedInMenu();
                         break;
                     // If the selected index is none of the above
                     default:
@@ -270,6 +235,44 @@
             }
             Console.ReadLine();
             EnterToContinue();
+        }
+
+        internal static void Withdraw()
+        {
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
+
+            string[] myArray = accounts.Select(account => account.name).ToArray();
+            Array.Resize(ref myArray, myArray.Length + 1);
+            myArray[myArray.Length - 1] = "Back";
+
+            Menu balanceMenu = new Menu(myArray);
+            balanceMenu.PrintMenu();
+            int index = balanceMenu.UseMenu();
+
+            if (index + 1 == myArray.Length)
+            {
+                LoggedInMenu();
+            }
+            else
+            {
+                int accountId = accounts[index].id;
+                Console.WriteLine($"\nYou selected {myArray[index]}.");
+                Console.WriteLine("Enter amount to withdraw: ");
+                if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+                {
+                    Console.WriteLine("You did not enter a valid input");
+                    return;
+                }
+                bool success = PostgresDataAccess.AccountWithdraw(Menu.LoggedInUserID, accountId, amount);
+                if (success)
+                {
+                    Console.WriteLine("Withdraw successfull");
+                }
+                else
+                {
+                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
+                }
+            }
         }
 
         internal static void EnterToContinue()
