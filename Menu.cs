@@ -204,15 +204,8 @@ namespace FoxBank
                         break;
                     // If the selected index is 1 (Create New User)
                     case 1:
-                        bool success = Helper.Transaction();
-                        if (success)
-                        {
-                            Console.WriteLine("Transaction compelete");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Transaction Failed, Not Enough Funds");
-                        }
+
+                        Helper.WhichAccount();
                         // Call the RandomMethod() method
                         //Transfer();
                         break;
@@ -324,12 +317,14 @@ namespace FoxBank
                     EnterToContinue();
                     LoggedInMenu();
                 }
-                bool success = PostgresDataAccess.AccountWithdraw(Menu.LoggedInUserID, accountId, amount);
+                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
                 if (success)
                 {
-                    Console.WriteLine("Withdraw successfull");
+
+                    Console.WriteLine("Withdraw successful");                
                     EnterToContinue();
                     LoggedInMenu();
+
                 }
                 else
                 {

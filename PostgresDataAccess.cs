@@ -67,7 +67,7 @@ public class PostgresDataAccess
             return output.ToList();
         }
     }
-    public static bool MoneyTransfer(int user_id, int from_account_id, int to_account_id, decimal amount)
+    public static bool MoneyTransfer(int from_account_id, int to_account_id, decimal amount)
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
@@ -91,7 +91,7 @@ public class PostgresDataAccess
         }
     }
 
-    public static bool AccountWithdraw(int user_id, int from_account_id, decimal amount)
+    public static bool AccountWithdraw(int from_account_id, decimal amount)
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
