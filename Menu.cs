@@ -90,7 +90,7 @@
         internal static void SignInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Sign In", "Exit" });
+            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut", "Exit" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -110,8 +110,11 @@
                         // Call the RandomMethod() method
                         Menu.SignIn();
                         break;
-                    // If the selected index is 2 (Exit)
                     case 1:
+                        CreateUser();
+                        break;
+                    // If the selected index is 2 (Exit)
+                    case 2:
                         // Set the showMenu variable to false to exit the loop
                         Environment.Exit(0);
                         break;
@@ -121,6 +124,59 @@
                         break;
                 }
             }
+        }
+
+        private static void AdminMenu()
+        {
+            Menu mainAdminMenu = new Menu(new string[] { "Create User", "View User", "Create new account", "Sign out" });
+            mainAdminMenu.PrintMenu();
+
+            bool showAdminMenu = true;
+
+            while (showAdminMenu)
+            {
+                int index = mainAdminMenu.UseMenu();
+
+                switch (index)
+                {
+                    case 0:
+                        CreateUser();
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        private static void CreateUser()
+        {
+            string firstName = InputStringValidator("What's the users first name? ");
+            string lastName = InputStringValidator("What's the users last name? ");
+            string pinCode = InputStringValidator("What's the users pin code? ");
+            string email = InputStringValidator("What's the users email adress? ");
+
+            // Load role from db, select role names, and turn it into an array.
+            List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
+            string[] roleArray = roles.Select(role => role.name).ToArray();
+
+            // menu stuff
+            Menu roleMenu = new Menu(roleArray);
+            roleMenu.PrintMenu();
+            int roleIndex = roleMenu.UseMenu();
+            int roleId = roles[roleIndex].id;
+
+            Console.ReadLine();
+
+            // Load branch from db, select branch names, and turn it into an array.
+            List<BankBranchModel> branches = PostgresDataAccess.LoadBankBranchModel();
+            string[] branchArray = branches.Select(branch => branch.name).ToArray();
+
+            // menu stuff
+            Menu branchMenu = new Menu(branchArray);
+            branchMenu.PrintMenu();
+            int branchIndex = branchMenu.UseMenu();
+            int branchId = branches[branchIndex].id;
+
+            PostgresDataAccess.CreateUserModel(firstName, lastName, pinCode, roleId, branchId, email);
         }
 
         //Method that prints menu when loggedin
@@ -145,7 +201,7 @@
                     // If the selected index is 0 (Sign In)
                     case 0:
                         //ShowBalance();
-                        ShowBalanceMenu();
+                        ShowBalance();
                         break;
                     // If the selected index is 1 (Create New User)
                     case 1:
@@ -183,43 +239,6 @@
             }
         }
 
-        //Method that prints menu for show balance option
-        internal static void ShowBalanceMenu()
-        {
-            // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Show balance", "Back" });
-            // Print the menu to the console
-            mainMenu.PrintMenu();
-
-            // Declare a variable to keep track of whether to show the menu or not
-            bool showMenu = true;
-
-            // Loop until the showMenu variable is false
-            while (showMenu)
-            {
-                // Get the selected index from the UseMenu method
-                int index = mainMenu.UseMenu();
-                // Check the selected index
-                switch (index)
-                {
-                    // If the selected index is 0 (Sign In)
-                    case 0:
-                        // Call the RandomMethod() method
-                        ShowBalance();
-                        break;
-                    case 1:
-                        // Set the showMenu variable to false to exit the loop
-                        showMenu = false;
-                        LoggedInMenu();
-                        break;
-                    // If the selected index is none of the above
-                    default:
-                        // Do nothing
-                        break;
-                }
-            }
-        }
-
         //Method to check email and pin when signing in
         internal static void SignIn()
         {
@@ -246,10 +265,7 @@
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
                     EnterToContinue();
-                    //Create if-statement to determine client or admin menu.
-                    //if client
-                    LoggedInMenu();
-                    //if admin
+                    if (user.role_id != 1) { LoggedInMenu(); } else { AdminMenu(); }
                     return;
                 }
                 if (counter >= users.Count)
@@ -264,12 +280,18 @@
         internal static void ShowBalance()
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            foreach (AccountModel account in accounts)
+            if (accounts.Count > 0)
             {
-                Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance}");
+                foreach (AccountModel account in accounts)
+                {
+                    Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance}");
+                }
+                EnterToContinue();
             }
-            Console.ReadLine();
-            EnterToContinue();
+            else
+            {
+                Console.WriteLine("No Accounts found!");
+            }
         }
 
         internal static void EnterToContinue()
@@ -277,6 +299,20 @@
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
         }
-    }
 
+        private static string InputStringValidator(string prompt)
+        {
+            string userInput = "";
+            while (userInput.Length == 0)
+            {
+                Console.Write(prompt);
+                userInput = Console.ReadLine();
+                if (userInput.Length == 0)
+                {
+                    Console.WriteLine("\nThat is not a valid input. Please try again.");
+                }
+            }
+            return userInput;
+        }
+    }
 }

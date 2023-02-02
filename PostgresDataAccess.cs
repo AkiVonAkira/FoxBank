@@ -20,6 +20,23 @@ public class PostgresDataAccess
         }
     }
 
+    internal static void CreateUserModel(string firstName, string lastName, string pinCode, int roleId, int branchId, string bankEmail)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            try
+            {
+                var output = cnn.Execute($@"
+                INSERT INTO bank_user (first_name, last_name, pin_code, role_id, branch_id, bank_email)
+                VALUES ('{firstName}', '{lastName}', '{pinCode}', '{roleId}', '{branchId}', '{bankEmail}')", new DynamicParameters());
+            }
+            catch (Npgsql.PostgresException e)
+            {
+                Console.WriteLine(e.MessageText);
+            }
+        }
+    }
+
     internal static List<AccountModel> LoadAccountModel()
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
