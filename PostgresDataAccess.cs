@@ -108,7 +108,6 @@ public class PostgresDataAccess
                 }
                 catch (Npgsql.PostgresException e)
                 {
-                    Console.WriteLine(e.MessageText);
                     return false;
                 }
                 return true;
