@@ -91,6 +91,32 @@ public class PostgresDataAccess
         }
     }
 
+    public static bool AccountWithdraw(int user_id, int from_account_id, decimal amount)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            {
+                try
+                {
+                    var output = cnn.Query($@"
+                
+                UPDATE bank_account SET balance = CASE
+                    WHEN id = {from_account_id} AND balance>={amount} THEN balance-{amount}
+                END
+                WHERE id ={from_account_id}", new DynamicParameters());
+
+                }
+                catch (Npgsql.PostgresException e)
+                {
+                    Console.WriteLine(e.MessageText);
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
+
     internal static List<BankBranchModel> LoadBankBranchModel()
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
