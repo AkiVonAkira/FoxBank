@@ -10,10 +10,7 @@ namespace FoxBank
         private readonly string[] _menuItems;
         // Declare a variable to keep track of the selected menu item
         private int _selectedIndex;
-        public static int Login { get; set; }
-        // Constructor that takes an array of strings as a parameter, 
-        // initializes the _menuItems array with the passed in array
-        // and sets the initial selected index to 0
+
         public Menu(string[] items)
         {
             _menuItems = items;
@@ -237,6 +234,7 @@ namespace FoxBank
         //Method to check email and pin when signing in
         internal static void SignIn()
         {
+            Console.Clear();
             List<UserModel> users = PostgresDataAccess.LoadUserModel();
             Console.WriteLine("Enter email & password");
             Console.Write("Email: ");
@@ -256,7 +254,7 @@ namespace FoxBank
                 counter++;
                 if (user.bank_email.Equals(email) && user.pin_code == pin)
                 {
-                    Login = user.id;
+                    Console.Clear();
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
                     EnterToContinue();
@@ -274,6 +272,7 @@ namespace FoxBank
 
         internal static void ShowBalance()
         {
+            Console.Clear();
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
             if (accounts.Count > 0)
             {
@@ -281,12 +280,13 @@ namespace FoxBank
                 {
                     Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance}");
                 }
-                EnterToContinue();
             }
             else
             {
                 Console.WriteLine("No Accounts found!");
             }
+            EnterToContinue();
+            LoggedInMenu();
         }
 
         internal static void Withdraw()
@@ -307,22 +307,30 @@ namespace FoxBank
             }
             else
             {
+                Console.Clear();
                 int accountId = accounts[index].id;
                 Console.WriteLine($"\nYou selected {myArray[index]}.");
                 Console.WriteLine("Enter amount to withdraw: ");
                 if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                 {
                     Console.WriteLine("You did not enter a valid input");
-                    return;
+                    EnterToContinue();
+                    LoggedInMenu();
                 }
                 bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
                 if (success)
                 {
-                    Console.WriteLine("Withdraw successful");
+
+                    Console.WriteLine("Withdraw successful");                
+                    EnterToContinue();
+                    LoggedInMenu();
+
                 }
                 else
                 {
                     Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
+                    EnterToContinue();
+                    LoggedInMenu();
                 }
             }
         }
