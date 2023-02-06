@@ -40,7 +40,6 @@
         }
 
         // Method to handle user input and navigate the menu
-        // Method to handle user input and navigate the menu
         public int UseMenu()
         {
             // Declare a variable to store the user's input
@@ -233,9 +232,7 @@
             Array.Resize(ref myArray, myArray.Length + 1);
             myArray[myArray.Length - 1] = "Back";
 
-            Menu balanceMenu = new Menu(myArray);
-            balanceMenu.PrintMenu();
-            int index = balanceMenu.UseMenu();
+            int index = Helper.MenuIndexer(myArray);
 
             if (index + 1 == myArray.Length)
             {

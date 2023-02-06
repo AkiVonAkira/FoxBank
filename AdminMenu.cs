@@ -35,7 +35,7 @@
             string[] roleArray = roles.Select(role => role.name).ToArray();
 
             // menu stuff
-            int roleIndex = Helper.ListDBMenuName(roleArray);
+            int roleIndex = Helper.MenuIndexer(roleArray);
             int roleId = roles[roleIndex].id;
 
             Console.ReadLine();
@@ -45,7 +45,7 @@
             string[] branchArray = branches.Select(branch => branch.name).ToArray();
 
             // menu stuff
-            int branchIndex = Helper.ListDBMenuName(branchArray);
+            int branchIndex = Helper.MenuIndexer(branchArray);
             int branchId = branches[branchIndex].id;
 
             Console.Write($"\nCreating User");

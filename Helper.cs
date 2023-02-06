@@ -102,7 +102,8 @@
             Thread.Sleep(600);
         }
 
-        internal static int ListDBMenuName(string[] array)
+        // This snippet returns an index of the selected menu item from
+        internal static int MenuIndexer(string[] array)
         {
             Menu menu = new Menu(array);
             menu.PrintMenu();
