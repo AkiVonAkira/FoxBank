@@ -35,7 +35,7 @@
             string[] roleArray = roles.Select(role => role.name.ToUpper()).ToArray();
 
             // menu stuff
-            int roleIndex = Helper.MenuIndexer(roleArray, false);
+            int roleIndex = Helper.MenuIndexer(roleArray);
             int roleId = roles[roleIndex].id;
 
             // Load branch from db, select branch names, and turn it into an array.
@@ -43,7 +43,7 @@
             string[] branchArray = branches.Select(branch => branch.name.ToUpper()).ToArray();
 
             // menu stuff
-            int branchIndex = Helper.MenuIndexer(branchArray, false);
+            int branchIndex = Helper.MenuIndexer(branchArray);
             int branchId = branches[branchIndex].id;
 
             Console.Write($"\nCreating User");

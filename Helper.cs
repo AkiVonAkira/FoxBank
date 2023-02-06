@@ -7,7 +7,7 @@
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
 
             string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
-            int index = Helper.MenuIndexer(myArray);
+            int index = Helper.MenuIndexer(myArray, true);
             if (index == myArray.Length)
             {
                 Menu.LoggedInMenu();
@@ -20,7 +20,7 @@
                 // remove the selected menu item from the array
                 myArray = myArray.Where(o => o != myArray[index]).ToArray();
                 EnterToContinue();
-                int index2 = Helper.MenuIndexer(myArray);
+                int index2 = Helper.MenuIndexer(myArray, true);
                 if (index2 == myArray.Length)
                 {
                     Menu.LoggedInMenu();
@@ -69,7 +69,7 @@
         }
 
         // This snippet returns an index of the selected menu item from
-        internal static int MenuIndexer(string[] array, bool hasBack = true)
+        internal static int MenuIndexer(string[] array, bool hasBack = false)
         {
             if (hasBack)
             {
