@@ -40,6 +40,7 @@
                 bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
                 if (success)
                 {
+                    Delay();
                     Console.WriteLine("Transaction compelete");
                     EnterToContinue();
                     Menu.LoggedInMenu();
