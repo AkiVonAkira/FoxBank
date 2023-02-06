@@ -228,7 +228,7 @@
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
 
-            string[] myArray = accounts.Select(account => account.name).ToArray();
+            string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
             Array.Resize(ref myArray, myArray.Length + 1);
             myArray[myArray.Length - 1] = "Back";
 
