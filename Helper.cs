@@ -20,10 +20,8 @@
                 Console.Clear();
                 int from_accountId = accounts[index].id;
                 Console.WriteLine($"\nYou selected {myArray[index]}.");
-              
                 // remove the selected menu item from the array
                 myArray = myArray.Where(o => o != myArray[index]).ToArray();
-              
                 EnterToContinue();
                 Console.Clear();
                 int index2 = Helper.MenuIndexer(myArray);
@@ -39,7 +37,7 @@
                 if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                 {
                     Console.WriteLine("You did not enter a valid input");
-                    Menu.EnterToContinue();
+                    EnterToContinue();
                     Menu.LoggedInMenu();
 
                 }
@@ -47,13 +45,13 @@
                 if (success)
                 {
                     Console.WriteLine("Transaction compelete");
-                    Menu.EnterToContinue();'
+                    EnterToContinue();
                     Menu.LoggedInMenu();
                 }
                 else
                 {
                     Console.WriteLine("Transaction Failed, Not Enough Funds");
-                    Menu.EnterToContinue();
+                    EnterToContinue();
                     Menu.LoggedInMenu();
                 }
             }
