@@ -23,7 +23,7 @@
                 Console.Clear();
                 int from_accountId = accounts[index].id;
                 Console.WriteLine($"\nYou selected {myArray[index]}.");
-                Menu.EnterToContinue();
+                EnterToContinue();
                 Console.Clear();
                 transactionMenu.PrintMenu();
                 int index2 = transactionMenu.UseMenu();
@@ -35,7 +35,7 @@
                 if (from_accountId == to_accountId)
                 {
                     Console.WriteLine("Can't Transfer to same account! Try again");
-                    Menu.EnterToContinue();
+                    EnterToContinue();
                     Menu.LoggedInMenu();
                 }
                 else
@@ -48,7 +48,7 @@
                     if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                     {
                         Console.WriteLine("You did not enter a valid input");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
 
                     }
@@ -56,17 +56,66 @@
                     if (success)
                     {
                         Console.WriteLine("Transaction compelete");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
                     }
                     else
                     {
                         Console.WriteLine("Transaction Failed, Not Enough Funds");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
                     }
                 }
             }
+        }
+
+        internal static string InputStringValidator(string prompt)
+        {
+            string userInput = "";
+            while (userInput.Length == 0)
+            {
+                Console.Write(prompt);
+                userInput = Console.ReadLine();
+                if (userInput.Length == 0)
+                {
+                    Console.WriteLine("\nThat is not a valid input. Please try again.");
+                }
+            }
+            return userInput;
+        }
+
+        // This snippet returns an index of the selected menu item from
+        internal static int MenuIndexer(string[] array)
+        {
+            Menu menu = new Menu(array);
+            menu.PrintMenu();
+            int index = menu.UseMenu();
+            return index;
+        }
+
+        internal static void Delay()
+        {
+            int delay = 0;
+            for (int i = 0; delay < 15; i++)
+            {
+                delay++;
+                Console.Write(".");
+                Thread.Sleep(175);
+                if (delay > 10)
+                {
+                    delay++;
+                    Console.Write(".");
+                    Thread.Sleep(75);
+                }
+            }
+            Console.Write($"\u2713\n");
+            Thread.Sleep(600);
+        }
+
+        internal static void EnterToContinue()
+        {
+            Console.Write("\nPress enter to continue...");
+            Console.ReadLine();
         }
     }
 }
