@@ -32,20 +32,18 @@
 
             // Load role from db, select role names, and turn it into an array.
             List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
-            string[] roleArray = roles.Select(role => role.name).ToArray();
+            string[] roleArray = roles.Select(role => role.name.ToUpper()).ToArray();
 
             // menu stuff
-            int roleIndex = Helper.MenuIndexer(roleArray);
+            int roleIndex = Helper.MenuIndexer(roleArray, false);
             int roleId = roles[roleIndex].id;
-
-            Console.ReadLine();
 
             // Load branch from db, select branch names, and turn it into an array.
             List<BankBranchModel> branches = PostgresDataAccess.LoadBankBranchModel();
-            string[] branchArray = branches.Select(branch => branch.name).ToArray();
+            string[] branchArray = branches.Select(branch => branch.name.ToUpper()).ToArray();
 
             // menu stuff
-            int branchIndex = Helper.MenuIndexer(branchArray);
+            int branchIndex = Helper.MenuIndexer(branchArray, false);
             int branchId = branches[branchIndex].id;
 
             Console.Write($"\nCreating User");
