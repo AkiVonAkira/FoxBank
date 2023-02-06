@@ -165,7 +165,7 @@ namespace FoxBank
 
         private static void OpenAccount()
         {
-            string[] accountArray = Templates.getNames();
+            string[] accountArray = AccountTemplates.getNames();
             int accountIndex = Helper.MenuIndexer(accountArray, true);
             if (accountIndex == accountArray.Length)
             {

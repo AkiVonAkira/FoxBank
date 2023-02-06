@@ -6,7 +6,7 @@
         public decimal interest_rate;
     }
 
-    static class Templates
+    static class AccountTemplates
     {
         public static List<AccountTemplate> list = new List<AccountTemplate>
         {
