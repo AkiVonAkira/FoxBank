@@ -23,8 +23,6 @@
         {
             // Clear the console before printing the menu
             Console.Clear();
-            // Print a message to prompt the user to select an option
-            Console.WriteLine("Please select an option:");
             // Iterate through the menu items array
             for (int i = 0; i < _menuItems.Length; i++)
             {
@@ -105,17 +103,13 @@
                 // Check the selected index
                 switch (index)
                 {
-                    // If the selected index is 0 (Sign In)
                     case 0:
-                        // Call the RandomMethod() method
-                        Menu.SignIn();
+                        SignIn();
                         break;
                     case 1:
-                        CreateUser();
+                        AdminMenu.CreateUser();
                         break;
-                    // If the selected index is 2 (Exit)
                     case 2:
-                        // Set the showMenu variable to false to exit the loop
                         Environment.Exit(0);
                         break;
                     // If the selected index is none of the above
@@ -124,59 +118,6 @@
                         break;
                 }
             }
-        }
-
-        private static void AdminMenu()
-        {
-            Menu mainAdminMenu = new Menu(new string[] { "Create User", "View User", "Create new account", "Sign out" });
-            mainAdminMenu.PrintMenu();
-
-            bool showAdminMenu = true;
-
-            while (showAdminMenu)
-            {
-                int index = mainAdminMenu.UseMenu();
-
-                switch (index)
-                {
-                    case 0:
-                        CreateUser();
-                        break;
-                    default: break;
-                }
-            }
-        }
-
-        private static void CreateUser()
-        {
-            string firstName = InputStringValidator("What's the users first name? ");
-            string lastName = InputStringValidator("What's the users last name? ");
-            string pinCode = InputStringValidator("What's the users pin code? ");
-            string email = InputStringValidator("What's the users email adress? ");
-
-            // Load role from db, select role names, and turn it into an array.
-            List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
-            string[] roleArray = roles.Select(role => role.name).ToArray();
-
-            // menu stuff
-            Menu roleMenu = new Menu(roleArray);
-            roleMenu.PrintMenu();
-            int roleIndex = roleMenu.UseMenu();
-            int roleId = roles[roleIndex].id;
-
-            Console.ReadLine();
-
-            // Load branch from db, select branch names, and turn it into an array.
-            List<BankBranchModel> branches = PostgresDataAccess.LoadBankBranchModel();
-            string[] branchArray = branches.Select(branch => branch.name).ToArray();
-
-            // menu stuff
-            Menu branchMenu = new Menu(branchArray);
-            branchMenu.PrintMenu();
-            int branchIndex = branchMenu.UseMenu();
-            int branchId = branches[branchIndex].id;
-
-            PostgresDataAccess.CreateUserModel(firstName, lastName, pinCode, roleId, branchId, email);
         }
 
         //Method that prints menu when loggedin
@@ -198,13 +139,12 @@
                 // Check the selected index
                 switch (index)
                 {
-                    // If the selected index is 0 (Sign In)
                     case 0:
                         //ShowBalance();
                         ShowBalance();
                         break;
-                    // If the selected index is 1 (Create New User)
                     case 1:
+<<<<<<< Updated upstream
                         bool success = Helper.Transaction();
                         if (success)
                         {
@@ -215,15 +155,21 @@
                             Console.WriteLine("Transaction Failed, Not Enough Funds");
                         }
                         // Call the RandomMethod() method
+=======
+
+                        Helper.WhichAccount();
+>>>>>>> Stashed changes
                         //Transfer();
                         break;
-                    // If the selected index is 2 (Exit)
                     case 2:
+<<<<<<< Updated upstream
                         // Call the RandomMethod() method
                         //Withdraw();
+=======
+                        Withdraw();
+>>>>>>> Stashed changes
                         break;
                     case 3:
-                        // Call the RandomMethod() method
                         //CreateNewAccount();
                         break;
                     case 4:
@@ -265,7 +211,14 @@
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
                     EnterToContinue();
-                    if (user.role_id != 1) { LoggedInMenu(); } else { AdminMenu(); }
+                    if (user.role_id != 1)
+                    {
+                        LoggedInMenu();
+                    }
+                    else
+                    {
+                        AdminMenu.Menu();
+                    }
                     return;
                 }
                 if (counter >= users.Count)
@@ -292,27 +245,63 @@
             {
                 Console.WriteLine("No Accounts found!");
             }
+<<<<<<< Updated upstream
+=======
+            EnterToContinue();
+            LoggedInMenu();
+        }
+
+        internal static void Withdraw()
+        {
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
+
+            string[] myArray = accounts.Select(account => account.name).ToArray();
+            Array.Resize(ref myArray, myArray.Length + 1);
+            myArray[myArray.Length - 1] = "Back";
+
+            Menu balanceMenu = new Menu(myArray);
+            balanceMenu.PrintMenu();
+            int index = balanceMenu.UseMenu();
+
+            if (index + 1 == myArray.Length)
+            {
+                LoggedInMenu();
+            }
+            else
+            {
+                Console.Clear();
+                int accountId = accounts[index].id;
+                Console.WriteLine($"\nYou selected {myArray[index]}.");
+                Console.WriteLine("Enter amount to withdraw: ");
+                if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+                {
+                    Console.WriteLine("You did not enter a valid input");
+                    EnterToContinue();
+                    LoggedInMenu();
+                }
+                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
+                if (success)
+                {
+
+                    Console.WriteLine("Withdraw successful");
+                    EnterToContinue();
+                    LoggedInMenu();
+
+                }
+                else
+                {
+                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
+                    EnterToContinue();
+                    LoggedInMenu();
+                }
+            }
+>>>>>>> Stashed changes
         }
 
         internal static void EnterToContinue()
         {
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
-        }
-
-        private static string InputStringValidator(string prompt)
-        {
-            string userInput = "";
-            while (userInput.Length == 0)
-            {
-                Console.Write(prompt);
-                userInput = Console.ReadLine();
-                if (userInput.Length == 0)
-                {
-                    Console.WriteLine("\nThat is not a valid input. Please try again.");
-                }
-            }
-            return userInput;
         }
     }
 }
