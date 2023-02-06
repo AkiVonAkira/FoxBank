@@ -171,7 +171,7 @@
             if (!int.TryParse(Console.ReadLine(), out int pin))
             {
                 Console.WriteLine("You did not enter a number");
-                EnterToContinue();
+                Helper.EnterToContinue();
                 return;
             }
 
@@ -185,7 +185,7 @@
                     Console.Clear();
                     Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
-                    EnterToContinue();
+                    Helper.EnterToContinue();
                     if (user.role_id != 1)
                     {
                         LoggedInMenu();
@@ -199,7 +199,7 @@
                 if (counter >= users.Count)
                 {
                     Console.WriteLine("Email or pin-code was not correct.");
-                    EnterToContinue();
+                    Helper.EnterToContinue();
                     return;
                 }
             }
@@ -220,7 +220,7 @@
             {
                 Console.WriteLine("No Accounts found!");
             }
-            EnterToContinue();
+            Helper.EnterToContinue();
             LoggedInMenu();
         }
 
@@ -247,7 +247,7 @@
                 if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                 {
                     Console.WriteLine("You did not enter a valid input");
-                    EnterToContinue();
+                    Helper.EnterToContinue();
                     LoggedInMenu();
                 }
                 bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
@@ -255,23 +255,17 @@
                 {
 
                     Console.WriteLine("Withdraw successful");
-                    EnterToContinue();
+                    Helper.EnterToContinue();
                     LoggedInMenu();
 
                 }
                 else
                 {
                     Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
-                    EnterToContinue();
+                    Helper.EnterToContinue();
                     LoggedInMenu();
                 }
             }
-        }
-
-        internal static void EnterToContinue()
-        {
-            Console.Write("\nPress enter to continue...");
-            Console.ReadLine();
         }
     }
 }

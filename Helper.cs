@@ -23,7 +23,7 @@
                 Console.Clear();
                 int from_accountId = accounts[index].id;
                 Console.WriteLine($"\nYou selected {myArray[index]}.");
-                Menu.EnterToContinue();
+                EnterToContinue();
                 Console.Clear();
                 transactionMenu.PrintMenu();
                 int index2 = transactionMenu.UseMenu();
@@ -35,7 +35,7 @@
                 if (from_accountId == to_accountId)
                 {
                     Console.WriteLine("Can't Transfer to same account! Try again");
-                    Menu.EnterToContinue();
+                    EnterToContinue();
                     Menu.LoggedInMenu();
                 }
                 else
@@ -48,7 +48,7 @@
                     if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                     {
                         Console.WriteLine("You did not enter a valid input");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
 
                     }
@@ -56,13 +56,13 @@
                     if (success)
                     {
                         Console.WriteLine("Transaction compelete");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
                     }
                     else
                     {
                         Console.WriteLine("Transaction Failed, Not Enough Funds");
-                        Menu.EnterToContinue();
+                        EnterToContinue();
                         Menu.LoggedInMenu();
                     }
                 }
@@ -83,6 +83,16 @@
             }
             return userInput;
         }
+
+        // This snippet returns an index of the selected menu item from
+        internal static int MenuIndexer(string[] array)
+        {
+            Menu menu = new Menu(array);
+            menu.PrintMenu();
+            int index = menu.UseMenu();
+            return index;
+        }
+
         internal static void Delay()
         {
             int delay = 0;
@@ -102,13 +112,10 @@
             Thread.Sleep(600);
         }
 
-        // This snippet returns an index of the selected menu item from
-        internal static int MenuIndexer(string[] array)
+        internal static void EnterToContinue()
         {
-            Menu menu = new Menu(array);
-            menu.PrintMenu();
-            int index = menu.UseMenu();
-            return index;
+            Console.Write("\nPress enter to continue...");
+            Console.ReadLine();
         }
     }
 }
