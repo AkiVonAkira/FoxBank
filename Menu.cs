@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using System.Data;
+
+namespace FoxBank
 {
     internal class Menu
     {
@@ -103,7 +105,8 @@
                         SignIn();
                         break;
                     case 1:
-                        AdminMenu.CreateUser();
+                        //dev shortcut
+                        OpenAccount();
                         break;
                     case 2:
                         Environment.Exit(0);
@@ -120,7 +123,7 @@
         internal static void LoggedInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Show balance", "Transfer", "Withdraw", "Create new account", "Sign out" });
+            Menu mainMenu = new Menu(new string[] { "Show balance", "Transfer", "Withdraw", "Open new account", "Sign out" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -145,6 +148,7 @@
                         Withdraw();
                         break;
                     case 3:
+                        OpenAccount();
                         break;
                     case 4:
                         // Set the showMenu variable to false to exit the loop
@@ -156,6 +160,16 @@
                         // Do nothing
                         break;
                 }
+            }
+        }
+
+        private static void OpenAccount()
+        {
+            string[] accountArray = AccountTemplates.getNames();
+            int accountIndex = Helper.MenuIndexer(accountArray, true);
+            if (accountIndex == accountArray.Length)
+            {
+                SignInMenu();
             }
         }
 
@@ -229,12 +243,9 @@
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
 
             string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
-            Array.Resize(ref myArray, myArray.Length + 1);
-            myArray[myArray.Length - 1] = "Back";
 
-            int index = Helper.MenuIndexer(myArray);
-
-            if (index + 1 == myArray.Length)
+            int index = Helper.MenuIndexer(myArray, true);
+            if (index == myArray.Length)
             {
                 LoggedInMenu();
             }
@@ -257,7 +268,6 @@
                     Console.WriteLine("Withdraw successful");
                     Helper.EnterToContinue();
                     LoggedInMenu();
-
                 }
                 else
                 {

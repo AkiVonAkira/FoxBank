@@ -7,11 +7,8 @@
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
 
             string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
-            Array.Resize(ref myArray, myArray.Length + 1);
-            myArray[myArray.Length - 1] = "Back";
-
-            int index = Helper.MenuIndexer(myArray);
-            if (index + 1 == myArray.Length)
+            int index = Helper.MenuIndexer(myArray, true);
+            if (index == myArray.Length)
             {
                 Menu.LoggedInMenu();
             }
@@ -23,9 +20,8 @@
                 // remove the selected menu item from the array
                 myArray = myArray.Where(o => o != myArray[index]).ToArray();
                 EnterToContinue();
-                Console.Clear();
-                int index2 = Helper.MenuIndexer(myArray);
-                if (index2 + 1 == myArray.Length)
+                int index2 = Helper.MenuIndexer(myArray, true);
+                if (index2 == myArray.Length)
                 {
                     Menu.LoggedInMenu();
                 }
@@ -44,6 +40,7 @@
                 bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
                 if (success)
                 {
+                    Delay();
                     Console.WriteLine("Transaction compelete");
                     EnterToContinue();
                     Menu.LoggedInMenu();
@@ -73,8 +70,13 @@
         }
 
         // This snippet returns an index of the selected menu item from
-        internal static int MenuIndexer(string[] array)
+        internal static int MenuIndexer(string[] array, bool hasBack = false)
         {
+            if (hasBack)
+            {
+                Array.Resize(ref array, array.Length + 1);
+                array[array.Length - 1] = "Go Back";
+            }
             Menu menu = new Menu(array);
             menu.PrintMenu();
             int index = menu.UseMenu();
