@@ -7,6 +7,7 @@
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
 
             string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
+            string[] transferMenu = { "Transfer To Self", "Transfer To Other" };
             int index = Helper.MenuIndexer(myArray, true);
             if (index == myArray.Length)
             {
@@ -20,40 +21,77 @@
                 // remove the selected menu item from the array
                 myArray = myArray.Where(o => o != myArray[index]).ToArray();
                 EnterToContinue();
-                int index2 = Helper.MenuIndexer(myArray, true);
-                if (index2 == myArray.Length)
+                int TransferIndex = MenuIndexer(transferMenu, true);
+                if (TransferIndex == 0)
                 {
-                    Menu.LoggedInMenu();
-                }
-                int to_accountId = accounts[index2].id;
+                    int index2 = Helper.MenuIndexer(myArray, true);
+                    if (index2 == myArray.Length)
+                    {
+                        Menu.LoggedInMenu();
+                    }
+                    int to_accountId = accounts[index2].id;
 
-                Console.Clear();
-                Console.WriteLine($"\nYou selected {myArray[index2]}.");
-                Console.WriteLine("Enter amount to transfer: ");
-                if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+                    Console.Clear();
+                    Console.WriteLine($"\nYou selected {myArray[index2]}.");
+                    Console.WriteLine("Enter amount to transfer: ");
+                    if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+                    {
+                        Console.WriteLine("You did not enter a valid input");
+                        EnterToContinue();
+                        Menu.LoggedInMenu();
+
+                    }
+                    bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
+                    if (success)
+                    {
+                        Delay();
+                        Console.WriteLine("Transaction complete");
+                        EnterToContinue();
+                        Menu.LoggedInMenu();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Transaction Failed, Not Enough Funds");
+                        EnterToContinue();
+                        Menu.LoggedInMenu();
+                    }
+                }
+                else if (TransferIndex == 1)
                 {
-                    Console.WriteLine("You did not enter a valid input");
-                    EnterToContinue();
-                    Menu.LoggedInMenu();
+                    Console.Write("Skriv in kontonummer: ");
+                    if (!int.TryParse(Console.ReadLine(), out int user))
+                    {
+                        Console.WriteLine("You did not enter a valid input");
+                        EnterToContinue();
+
+                    }
+                    Console.Write("Enter amount to transfer: ");
+                    if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+                    {
+                        Console.WriteLine("You did not enter a valid input");
+                        EnterToContinue();
+
+                    }
+                    bool success = PostgresDataAccess.MoneyTransferOther(from_accountId, user, amount);
+                    if (success)
+                    {
+                        Delay();
+                        Console.WriteLine("Transaction complete");
+                        EnterToContinue();
+                        Menu.LoggedInMenu();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Transaction Failer, Not Enough Funds");
+                        EnterToContinue();
+                        Menu.LoggedInMenu();
+                    }
+
 
                 }
-                bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
-                if (success)
-                {
-                    Delay();
-                    Console.WriteLine("Transaction compelete");
-                    EnterToContinue();
-                    Menu.LoggedInMenu();
-                }
-                else
-                {
-                    Console.WriteLine("Transaction Failed, Not Enough Funds");
-                    EnterToContinue();
-                    Menu.LoggedInMenu();
-                }
+
             }
         }
-
         internal static string InputStringValidator(string prompt)
         {
             string userInput = "";
@@ -107,5 +145,7 @@
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
         }
+
+
     }
 }
