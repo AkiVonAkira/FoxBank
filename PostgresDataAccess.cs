@@ -74,13 +74,14 @@ public class PostgresDataAccess
             try
             {
                 var output = cnn.Query($@"
-                
+                BEGIN TRANSACTION;
                 UPDATE bank_account SET balance = CASE
                     WHEN id = {from_account_id} AND balance >= {amount} THEN balance - {amount}
-                    WHEN id = {to_account_id} THEN balance + {amount}
-
+                    WHEN id = {to_account_id} THEN balance + {amount}                   
                 END
-                WHERE id IN ({from_account_id},{to_account_id})", new DynamicParameters());
+                WHERE id IN ({from_account_id},{to_account_id});
+                INSERT INTO bank_transaction (name, from_account_id, to_account_id,amount) VALUES('Överföring',{from_account_id},{to_account_id},{amount});
+                COMMIT;", new DynamicParameters());
             }
             catch (Npgsql.PostgresException e)
             {
