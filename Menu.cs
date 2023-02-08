@@ -123,7 +123,7 @@ namespace FoxBank
         internal static void LoggedInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Show balance", "Transfer", "Withdraw", "Open new account", "Sign out" });
+            Menu mainMenu = new Menu(new string[] { "Show balance", "Transfer", "Withdraw", "Transaction History", "Open new account", "Sign out" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -148,9 +148,12 @@ namespace FoxBank
                         Withdraw();
                         break;
                     case 3:
-                        OpenAccount();
+                        TransactionHistory.AccountHistory();
                         break;
                     case 4:
+                        OpenAccount();
+                        break;
+                    case 5:
                         // Set the showMenu variable to false to exit the loop
                         showMenu = false;
                         SignInMenu();
