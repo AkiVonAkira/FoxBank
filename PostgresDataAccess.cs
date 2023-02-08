@@ -148,7 +148,7 @@ public class PostgresDataAccess
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
             {
-                var output = cnn.Query<TransactionModel>($@"SELECT name,amount FROM bank_transaction  WHERE id = {from_account_id}", new DynamicParameters());
+                var output = cnn.Query<TransactionModel>($@"SELECT name,amount FROM bank_transaction  WHERE from_account_id = {from_account_id}", new DynamicParameters());
                 return output.ToList();
             }
 
