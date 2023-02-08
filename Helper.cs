@@ -118,6 +118,22 @@
             return userInput;
         }
 
+        internal static decimal InputDecimalValidator(string prompt)
+        {
+            decimal userInput = 0;
+            bool validInput = false;
+            while (!validInput)
+            {
+                Console.Write(prompt);
+                validInput = decimal.TryParse(Console.ReadLine(), out userInput);
+                if (!validInput)
+                {
+                    Console.WriteLine("\nInvalid input. Please try again.");
+                }
+            }
+            return userInput;
+        }
+
         // This snippet returns an index of the selected menu item from
         internal static int MenuIndexer(string[] array, bool hasBack = false)
         {

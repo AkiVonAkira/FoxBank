@@ -2,9 +2,9 @@
 {
     internal class AdminMenu
     {
-        internal static void Menu()
+        internal static void LoggedInAdminMenu()
         {
-            Menu mainAdminMenu = new Menu(new string[] { "Create User", "View User", "Create new account", "Sign out" });
+            Menu mainAdminMenu = new Menu(new string[] { "Create User", "View as User", "Open new account", "Sign out" });
             mainAdminMenu.PrintMenu();
 
             bool showAdminMenu = true;
@@ -17,6 +17,12 @@
                 {
                     case 0:
                         CreateUser();
+                        break;
+                    case 1:
+                        Menu.LoggedInMenu();
+                        break;
+                    case 2:
+                        Menu.OpenAccount();
                         break;
                     default: break;
                 }
