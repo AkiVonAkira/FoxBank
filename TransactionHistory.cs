@@ -16,22 +16,14 @@
             else
             {
                 Console.Clear();
-
-                int accounthistory = TransactionModel.from_account_id;
-                accounts[index].id = accounthistory;
-                Console.WriteLine(accounts[index].id);
-                List<TransactionModel> transactionHistories = PostgresDataAccess.TransactionHistory(accounthistory);
+                int accountId = accounts[index].id;
+                List<TransactionModel> transactionHistories = PostgresDataAccess.TransactionHistory(accountId);
                 foreach (TransactionModel transactionHistory in transactionHistories)
                 {
-                    accounthistory = accounts[index].id;
-                    Console.WriteLine($"{transactionHistory}");
-                    Console.WriteLine(accounthistory);
-
-
+                    Console.WriteLine($"{transactionHistory.name}, {transactionHistory.amount}");
                 }
                 //Console.WriteLine($"\nYou selected {myArray[index]}.");
 
-                Console.WriteLine();
                 Helper.EnterToContinue();
 
                 /*if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
