@@ -46,5 +46,10 @@
         {
             return list.Select(item => item.name).ToArray();
         }
+
+        public static decimal getRates(string name)
+        {
+            return list.Where(item => item.name == name).First().interest_rate;
+        }
     }
 }
