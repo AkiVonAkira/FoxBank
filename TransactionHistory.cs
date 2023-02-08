@@ -18,11 +18,13 @@
                 Console.Clear();
 
                 int accounthistory = TransactionModel.from_account_id;
+                accounts[index].id = accounthistory;
+                Console.WriteLine(accounts[index].id);
                 List<TransactionModel> transactionHistories = PostgresDataAccess.TransactionHistory(accounthistory);
                 foreach (TransactionModel transactionHistory in transactionHistories)
                 {
-                    accounthistory = transactionHistory.id;
-                    Console.WriteLine($"{transactionHistory.name}, {transactionHistory.amount}");
+                    accounthistory = accounts[index].id;
+                    Console.WriteLine($"{transactionHistory}");
                     Console.WriteLine(accounthistory);
 
 

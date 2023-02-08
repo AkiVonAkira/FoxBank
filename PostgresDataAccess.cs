@@ -155,6 +155,13 @@ public class PostgresDataAccess
         }
     }
 
+    internal static void PreviousTransactions(int from_account_id)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            var output = cnn.Query<TransactionModel>($@"SELECT name,amount FROM bank_transaction  WHERE id = {from_account_id}", new DynamicParameters());
+        }
+    }
 
     internal static List<BankBranchModel> LoadBankBranchModel()
     {
