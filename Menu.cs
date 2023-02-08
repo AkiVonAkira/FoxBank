@@ -166,28 +166,14 @@ namespace FoxBank
             }
         }
 
-        internal static void OpenAccount()
+        private static void OpenAccount()
         {
             string[] accountArray = AccountTemplates.getNames();
             int accountIndex = Helper.MenuIndexer(accountArray, true);
-            if (accountIndex == accountArray.Length) { SignInMenu(); }
-
-            string accountName = accountArray[accountIndex];
-            decimal accountInterestRate = AccountTemplates.getRates(accountName);
-
-            List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
-            string[] currencyArray = currencies.Select(currency => currency.name).ToArray();
-            int currencyIndex = Helper.MenuIndexer(currencyArray, true);
-            if (accountIndex == accountArray.Length) { OpenAccount(); }
-
-            int accountCurrencyId = currencies[currencyIndex].id;
-
-            decimal balance = Helper.InputDecimalValidator("Please enter the amount you would like in your account: ");
-
-            PostgresDataAccess.CreateAccountModel(accountName, balance, accountInterestRate, LoggedInUserID, accountCurrencyId);
-            Helper.Delay();
-            Console.WriteLine($"{accountName} Opened with {balance.ToString():n} {currencies[currencyIndex].name}");
-            Helper.EnterToContinue();
+            if (accountIndex == accountArray.Length)
+            {
+                SignInMenu();
+            }
         }
 
         //Method to check email and pin when signing in
@@ -213,23 +199,17 @@ namespace FoxBank
                 counter++;
                 if (user.bank_email.Equals(email) && user.pin_code == pin)
                 {
-                    //Helper.Delay();
-                    AsciiWelcome.PrintWelcome(user.first_name.ToString(), user.last_name.ToString());
+                    Console.Clear();
+                    Console.WriteLine($"Welcome to FOX BANK {user.first_name} {user.last_name}");
                     LoggedInUserID = user.id;
-                    //Helper.EnterToContinue();
-                    List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
-                    int userRoleId = user.role_id - 1;
-                    if (roles[userRoleId].is_client && !roles[userRoleId].is_admin) // id 2
+                    Helper.EnterToContinue();
+                    if (user.role_id != 1)
                     {
                         LoggedInMenu();
                     }
-                    else if (!roles[userRoleId].is_client && roles[userRoleId].is_admin) // id 1
+                    else
                     {
-                        AdminMenu.LoggedInAdminMenu();
-                    }
-                    else if (roles[userRoleId].is_client && roles[userRoleId].is_admin) // id 3
-                    {
-                        LoggedInMenu();
+                        AdminMenu.Menu();
                     }
                     return;
                 }
@@ -250,7 +230,7 @@ namespace FoxBank
             {
                 foreach (AccountModel account in accounts)
                 {
-                    Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n}");
+                    Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance}");
                 }
             }
             else
@@ -265,7 +245,7 @@ namespace FoxBank
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
 
-            string[] accArray = accounts.Select(account => account.name + ": " + String.Format("{0:n}", account.balance)).ToArray();
+            string[] accArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
 
             int index = Helper.MenuIndexer(accArray, true);
             if (index == accArray.Length)
