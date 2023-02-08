@@ -37,11 +37,38 @@ public class PostgresDataAccess
         }
     }
 
+    internal static void CreateAccountModel(string accountTypeName, decimal balance, decimal interestRate, int userId, int currencyId)
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            try
+            {
+                var output = cnn.Execute($@"
+                INSERT INTO bank_account (name, balance, interest_rate, user_id, currency_id)
+                VALUES ('{accountTypeName}', '{balance}', '{interestRate}', '{userId}', '{currencyId}')", new DynamicParameters());
+            }
+            catch (Npgsql.PostgresException e)
+            {
+                Console.WriteLine(e.MessageText);
+            }
+        }
+    }
+
     internal static List<AccountModel> LoadAccountModel()
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
             var output = cnn.Query<AccountModel>("SELECT * FROM bank_account", new DynamicParameters());
+            return output.ToList();
+        }
+    }
+
+
+    internal static List<BankCurrencyModel> LoadCurrencyModel()
+    {
+        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
+        {
+            var output = cnn.Query<BankCurrencyModel>("SELECT * FROM bank_currency", new DynamicParameters());
             return output.ToList();
         }
     }
