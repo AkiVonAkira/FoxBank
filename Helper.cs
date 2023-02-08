@@ -2,7 +2,7 @@
 {
     public static class Helper
     {
-        internal static void WhichAccount()
+        internal static void Transfer()
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
 
@@ -63,6 +63,7 @@
                     {
                         Console.WriteLine("You did not enter a valid input");
                         EnterToContinue();
+                        Menu.LoggedInMenu();
 
                     }
                     Console.Write("Enter amount to transfer: ");
@@ -70,23 +71,33 @@
                     {
                         Console.WriteLine("You did not enter a valid input");
                         EnterToContinue();
-
-                    }
-                    bool success = PostgresDataAccess.MoneyTransferOther(from_accountId, user, amount);
-                    if (success)
-                    {
-                        Delay();
-                        Console.WriteLine("Transaction complete");
-                        EnterToContinue();
                         Menu.LoggedInMenu();
+                    }
+                    List<UserModel> users = PostgresDataAccess.LoadUserModel();
+                    Console.Write("Enter your pin-code to verify: ");
+                    if (int.TryParse(Console.ReadLine(), out int pin) == true && pin == users[Menu.LoggedInUserID - 1].pin_code)
+                    {
+                        bool success = PostgresDataAccess.MoneyTransferOther(from_accountId, user, amount);
+                        if (success)
+                        {
+                            Delay();
+                            Console.WriteLine("Transaction complete");
+                            EnterToContinue();
+                            Menu.LoggedInMenu();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Transaction Failer, Not Enough Funds");
+                            EnterToContinue();
+                            Menu.LoggedInMenu();
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Transaction Failer, Not Enough Funds");
+                        Console.WriteLine("You did not enter a valid input or incorrect pin");
                         EnterToContinue();
                         Menu.LoggedInMenu();
                     }
-
 
                 }
 
