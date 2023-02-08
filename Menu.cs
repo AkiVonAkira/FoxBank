@@ -142,7 +142,7 @@ namespace FoxBank
                         ShowBalance();
                         break;
                     case 1:
-                        Helper.WhichAccount();
+                        Helper.Transfer();
                         break;
                     case 2:
                         Withdraw();
@@ -242,10 +242,10 @@ namespace FoxBank
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
 
-            string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
+            string[] accArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
 
-            int index = Helper.MenuIndexer(myArray, true);
-            if (index == myArray.Length)
+            int index = Helper.MenuIndexer(accArray, true);
+            if (index == accArray.Length)
             {
                 LoggedInMenu();
             }
@@ -253,7 +253,7 @@ namespace FoxBank
             {
                 Console.Clear();
                 int accountId = accounts[index].id;
-                Console.WriteLine($"\nYou selected {myArray[index]}.");
+                Console.WriteLine($"\nYou selected {accArray[index]}.");
                 Console.WriteLine("Enter amount to withdraw: ");
                 if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
                 {
