@@ -5,8 +5,7 @@
         internal static void Transfer()
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
-
-            string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
+            string[] myArray = GetUserAccountInformation(Menu.LoggedInUserID);
             string[] transferMenu = { "Transfer To Self", "Transfer To Other" };
             int index = Helper.MenuIndexer(myArray, true);
             if (index == myArray.Length)
@@ -134,17 +133,48 @@
             return userInput;
         }
 
-        // This snippet returns an index of the selected menu item from
+        internal static string[] GetUserAccountInformation(int userId)
+        {
+            // Load the accounts for the logged-in user
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(userId);
+            // Load the currency information
+            List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
+            // Create an array of strings containing the account name, balance, and currency name
+            string[] accArray = accounts.Select(account =>
+            {
+                // Find the currency associated with the account
+                var currency = currencies.FirstOrDefault(c => c.id == account.currency_id);
+                // If a currency was found, return the account information with the currency name
+                if (currency != null)
+                {
+                    return account.name + ": " + String.Format("{0:n}", account.balance) + " " + currency.name;
+                }
+                // If no currency was found, return the account information with a message indicating that the currency was not found
+                else
+                {
+                    return account.name + ": " + String.Format("{0:n}", account.balance) + " (Currency not found)";
+                }
+            }).ToArray();
+
+            return accArray;
+        }
+
+        // This method returns the index of the selected menu item from an array of strings
         internal static int MenuIndexer(string[] array, bool hasBack = false)
         {
+            // If the 'hasBack' flag is set to true, add a "Go Back" option to the end of the menu
             if (hasBack)
             {
                 Array.Resize(ref array, array.Length + 1);
                 array[array.Length - 1] = "Go Back";
             }
+            // Create a new instance of the 'Menu' class with the array of menu items
             Menu menu = new Menu(array);
+            // Print the menu
             menu.PrintMenu();
+            // Get the selected index using the 'UseMenu' method
             int index = menu.UseMenu();
+            // Return the selected index
             return index;
         }
 
