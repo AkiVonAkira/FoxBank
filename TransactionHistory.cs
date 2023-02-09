@@ -8,6 +8,7 @@
 
             string[] myArray = accounts.Select(account => account.name + ": " + account.balance).ToArray();
 
+
             int index = Helper.MenuIndexer(myArray, true);
             if (index == myArray.Length)
             {
@@ -16,38 +17,27 @@
             else
             {
                 Console.Clear();
-                int accountId = accounts[index].id;
+                var accountId = accounts[index].id;
                 List<TransactionModel> transactionHistories = PostgresDataAccess.TransactionHistory(accountId);
                 foreach (TransactionModel transactionHistory in transactionHistories)
                 {
-                    Console.WriteLine($"{transactionHistory.name}, {transactionHistory.amount}");
-                }
-                //Console.WriteLine($"\nYou selected {myArray[index]}.");
 
+                    if (accountId == transactionHistory.from_account_id)
+                    {
+                        Console.WriteLine($"{transactionHistory.name}  {transactionHistory.GetSignedAmount(transactionHistory.from_account_id)} Skickat till ID: {transactionHistory.to_account_id}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{transactionHistory.name}  +{transactionHistory.amount} Skickat från ID: {transactionHistory.from_account_id}");
+                    }
+
+                }
                 Helper.EnterToContinue();
 
-                /*if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
-                {
-                    Console.WriteLine("You did not enter a valid input");
-                    Helper.EnterToContinue();
-                    Menu.LoggedInMenu();
-                }
-                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
-                if (success)
-                {
-
-                    Console.WriteLine("Withdraw successful");
-                    Helper.EnterToContinue();
-                    Menu.LoggedInMenu();
-                }
-                else
-                {
-                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
-                    Helper.EnterToContinue();
-                    Menu.LoggedInMenu();
-                }
-                */
             }
         }
+
+
+
     }
 }
