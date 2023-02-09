@@ -213,10 +213,10 @@ namespace FoxBank
                 counter++;
                 if (user.bank_email.Equals(email) && user.pin_code == pin)
                 {
-                    //Helper.Delay();
+                    Helper.Delay();
                     AsciiWelcome.PrintWelcome(user.first_name.ToString(), user.last_name.ToString());
                     LoggedInUserID = user.id;
-                    //Helper.EnterToContinue();
+                    Helper.EnterToContinue();
                     List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
                     int userRoleId = user.role_id - 1;
                     if (roles[userRoleId].is_client && !roles[userRoleId].is_admin) // id 2
