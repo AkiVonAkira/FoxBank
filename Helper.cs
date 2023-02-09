@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using System.Diagnostics;
+
+namespace FoxBank
 {
     public static class Helper
     {
@@ -199,7 +201,7 @@
                     return account.name + ": " + String.Format("{0:n}", account.balance) + " (Currency not found)";
                 }
             }).ToArray();
-
+            return accArray;
         }
 
         // This method returns the index of the selected menu item from an array of strings
