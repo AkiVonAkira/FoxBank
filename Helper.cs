@@ -203,7 +203,7 @@ namespace FoxBank
         }
 
         // This method returns the index of the selected menu item from an array of strings
-        internal static int MenuIndexer(string[] array, bool hasBack = false)
+        internal static int MenuIndexer(string[] array, bool hasBack = false, string headerText = "")
         {
             // If the 'hasBack' flag is set to true, add a "Go Back" option to the end of the menu
             if (hasBack)
@@ -214,7 +214,14 @@ namespace FoxBank
             // Create a new instance of the 'Menu' class with the array of menu items
             Menu menu = new Menu(array);
             // Print the menu
-            menu.PrintMenu();
+            if (!string.IsNullOrEmpty(headerText))
+            {
+                menu.PrintMenu(headerText);
+            }
+            else
+            {
+                menu.PrintMenu();
+            }
             // Get the selected index using the 'UseMenu' method
             int index = menu.UseMenu();
             // Return the selected index
