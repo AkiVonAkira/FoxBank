@@ -106,7 +106,7 @@ namespace FoxBank
             while (!validInput)
             {
                 Console.Write(prompt);
-                validInput = decimal.TryParse(Console.ReadLine(), out userInput);
+                validInput = decimal.TryParse(Console.ReadLine().Replace(',', '.'), out userInput);
                 if (!validInput)
                 {
                     Console.WriteLine("\nInvalid input. Please try again.");
@@ -189,12 +189,14 @@ namespace FoxBank
                 // If a currency was found, return the account information with the currency name
                 if (currency != null)
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " + String.Format("{0:n}", account.balance) + " " + currency.name;
+                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    String.Format("{0:n}", account.balance) + " " + currency.name;
                 }
                 // If no currency was found, return the account information with a message indicating that the currency was not found
                 else
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " + String.Format("{0:n}", account.balance) + " (Currency not found)";
+                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    String.Format("{0:n}", account.balance) + " (Currency not found)";
                 }
             }).ToArray();
             return accArray;
@@ -267,6 +269,16 @@ namespace FoxBank
                 key = Console.ReadKey(true);
             }
             while (key.Key != ConsoleKey.Enter);
+        }
+
+        internal static string FirstCharToUpper(this string input)
+        {
+            switch (input)
+            {
+                case null: throw new ArgumentNullException(nameof(input));
+                case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                default: return input[0].ToString().ToUpper() + input.Substring(1);
+            }
         }
     }
 }
