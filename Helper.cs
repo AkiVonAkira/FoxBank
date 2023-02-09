@@ -10,15 +10,12 @@ namespace FoxBank
             string[] myArray = GetUserAccountInformation(Menu.LoggedInUserID);
             string[] transferMenu = { "Transfer To Self", "Transfer To Other" };
             int index = Helper.MenuIndexer(myArray, true);
-            if (index == myArray.Length)
-            {
-                Menu.LoggedInMenu();
-            }
+            if (index == myArray.Length) { Menu.LoggedInMenu(); }
             else
             {
-                Console.Clear();
+                AsciiArt.PrintHeader();
                 int from_accountId = accounts[index].id;
-                Console.WriteLine($"\nYou selected {myArray[index]}.");
+                Console.WriteLine($"\nTransfering From: \n{myArray[index]}");
                 // remove the selected menu item from the array
                 myArray = myArray.Where(o => o != myArray[index]).ToArray();
                 EnterToContinue();
@@ -32,16 +29,9 @@ namespace FoxBank
                     }
                     int to_accountId = accounts[index2].id;
 
-                    Console.Clear();
-                    Console.WriteLine($"\nYou selected {myArray[index2]}.");
-                    Console.WriteLine("Enter amount to transfer: ");
-                    if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
-                    {
-                        Console.WriteLine("You did not enter a valid input");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-
-                    }
+                    AsciiArt.PrintHeader();
+                    Console.WriteLine($"\nTransfering To: \n{myArray[index2]}");
+                    decimal amount = InputDecimalValidator("Enter amount to transfer: ");
                     bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
                     if (success)
                     {
@@ -59,28 +49,19 @@ namespace FoxBank
                 }
                 else if (TransferIndex == 1)
                 {
-                    Console.Write("Skriv in kontonummer: ");
-                    if (!int.TryParse(Console.ReadLine(), out int user))
-                    {
-                        Console.WriteLine("You did not enter a valid input");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-
-                    }
-                    Console.Write("Enter amount to transfer: ");
-                    if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
-                    {
-                        Console.WriteLine("You did not enter a valid input");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-                    }
                     List<UserModel> users = PostgresDataAccess.LoadUserModel();
-                    Console.Write("Enter your pin-code to verify: ");
-                    if (int.TryParse(Console.ReadLine(), out int pin) == true && pin == users[Menu.LoggedInUserID - 1].pin_code)
+                    int user = InputIntValidator("Write in the Account Number (ID) you want to transfer to: ");
+                    decimal amount = InputDecimalValidator("Enter amount to transfer: ");
+                    int pin = PinInput("Enter your pin-code to verify: ");
+                    int currentUserID = Menu.LoggedInUserID;
+                    var currentUser = users.FirstOrDefault(u => u.id == currentUserID);
+
+                    if (pin == currentUser.pin_code)
                     {
                         bool success = PostgresDataAccess.MoneyTransferOther(from_accountId, user, amount);
                         if (success)
                         {
+                            Console.WriteLine();
                             Delay();
                             Console.WriteLine("Transaction complete");
                             EnterToContinue();
@@ -99,11 +80,10 @@ namespace FoxBank
                         EnterToContinue();
                         Menu.LoggedInMenu();
                     }
-
                 }
-
             }
         }
+
         internal static string InputStringValidator(string prompt)
         {
             string userInput = "";
@@ -126,7 +106,23 @@ namespace FoxBank
             while (!validInput)
             {
                 Console.Write(prompt);
-                validInput = decimal.TryParse(Console.ReadLine(), out userInput);
+                validInput = decimal.TryParse(Console.ReadLine().Replace(',', '.'), out userInput);
+                if (!validInput)
+                {
+                    Console.WriteLine("\nInvalid input. Please try again.");
+                }
+            }
+            return userInput;
+        }
+
+        internal static int InputIntValidator(string prompt)
+        {
+            int userInput = 0;
+            bool validInput = false;
+            while (!validInput)
+            {
+                Console.Write(prompt);
+                validInput = int.TryParse(Console.ReadLine(), out userInput);
                 if (!validInput)
                 {
                     Console.WriteLine("\nInvalid input. Please try again.");
@@ -193,19 +189,21 @@ namespace FoxBank
                 // If a currency was found, return the account information with the currency name
                 if (currency != null)
                 {
-                    return account.name + ": " + String.Format("{0:n}", account.balance) + " " + currency.name;
+                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    String.Format("{0:n}", account.balance) + " " + currency.name;
                 }
                 // If no currency was found, return the account information with a message indicating that the currency was not found
                 else
                 {
-                    return account.name + ": " + String.Format("{0:n}", account.balance) + " (Currency not found)";
+                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    String.Format("{0:n}", account.balance) + " (Currency not found)";
                 }
             }).ToArray();
             return accArray;
         }
 
         // This method returns the index of the selected menu item from an array of strings
-        internal static int MenuIndexer(string[] array, bool hasBack = false)
+        internal static int MenuIndexer(string[] array, bool hasBack = false, string headerText = "")
         {
             // If the 'hasBack' flag is set to true, add a "Go Back" option to the end of the menu
             if (hasBack)
@@ -216,7 +214,14 @@ namespace FoxBank
             // Create a new instance of the 'Menu' class with the array of menu items
             Menu menu = new Menu(array);
             // Print the menu
-            menu.PrintMenu();
+            if (!string.IsNullOrEmpty(headerText))
+            {
+                menu.PrintMenu(headerText);
+            }
+            else
+            {
+                menu.PrintMenu();
+            }
             // Get the selected index using the 'UseMenu' method
             int index = menu.UseMenu();
             // Return the selected index
@@ -271,6 +276,16 @@ namespace FoxBank
                 key = Console.ReadKey(true);
             }
             while (key.Key != ConsoleKey.Enter);
+        }
+
+        internal static string FirstCharToUpper(this string input)
+        {
+            switch (input)
+            {
+                case null: throw new ArgumentNullException(nameof(input));
+                case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                default: return input[0].ToString().ToUpper() + input.Substring(1);
+            }
         }
     }
 }

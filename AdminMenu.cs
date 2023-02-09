@@ -31,6 +31,7 @@
 
         internal static void CreateUser()
         {
+            AsciiArt.PrintHeader();
             string firstName = Helper.InputStringValidator("What's the users first name? ");
             string lastName = Helper.InputStringValidator("What's the users last name? ");
             string pinCode = Helper.InputStringValidator("What's the users pin code? ");
@@ -38,24 +39,27 @@
 
             // Load role from db, select role names, and turn it into an array.
             List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
-            string[] roleArray = roles.Select(role => role.name.ToUpper()).ToArray();
+            string[] roleArray = roles.Select(role => Helper.FirstCharToUpper(role.name)).ToArray();
 
-            // menu stuff
-            int roleIndex = Helper.MenuIndexer(roleArray);
+            int roleIndex = Helper.MenuIndexer(roleArray, false, "Select Which Permission Role the User Should Have: ");
             int roleId = roles[roleIndex].id;
 
             // Load branch from db, select branch names, and turn it into an array.
             List<BankBranchModel> branches = PostgresDataAccess.LoadBankBranchModel();
-            string[] branchArray = branches.Select(branch => branch.name.ToUpper()).ToArray();
+            string[] branchArray = branches.Select(branch => Helper.FirstCharToUpper(branch.name)).ToArray();
 
-            // menu stuff
-            int branchIndex = Helper.MenuIndexer(branchArray);
+            int branchIndex = Helper.MenuIndexer(branchArray, false, "Select Which Branch the User is From: ");
             int branchId = branches[branchIndex].id;
 
-            Console.Write($"\nCreating User");
-            Helper.Delay();
-
             PostgresDataAccess.CreateUserModel(firstName, lastName, pinCode, roleId, branchId, email);
+            Helper.Delay();
+            AsciiArt.PrintHeader();
+            Console.WriteLine($"\n-------------------------------------------------\n\n" +
+                $"Created User: {firstName} {lastName} - With {Helper.FirstCharToUpper(roles[roleIndex].name)} Permissions" +
+                $" - From: {branches[branchIndex].name}.\n\n" +
+                $"-------------------------------------------------\n");
+            Helper.EnterToContinue();
+            LoggedInAdminMenu();
         }
     }
 }

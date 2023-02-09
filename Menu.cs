@@ -8,6 +8,7 @@
         private readonly string[] _menuItems;
         // Declare a variable to keep track of the selected menu item
         private int _selectedIndex;
+        private string _headerText;
 
         public Menu(string[] items)
         {
@@ -16,11 +17,22 @@
         }
 
         // Method to print the menu to the console
-        public void PrintMenu()
+        public void PrintMenu(string headerText = "")
         {
             // Clear the console before printing the menu
             Console.Clear();
             AsciiArt.PrintMenuHeader();
+            if (!string.IsNullOrEmpty(headerText))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"{headerText}\n");
+                _headerText = headerText;
+            }
+            else if (!string.IsNullOrEmpty(_headerText))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"{_headerText}\n");
+            }
             // Iterate through the menu items array
             for (int i = 0; i < _menuItems.Length; i++)
             {
@@ -42,7 +54,7 @@
         }
 
         // Method to handle user input and navigate the menu
-        public int UseMenu()
+        public int UseMenu(string headerText = "")
         {
             // Declare a variable to store the user's input
             ConsoleKey userInput;
@@ -73,12 +85,12 @@
                         // Store the current index in a variable
                         var index = _selectedIndex;
                         // Reprint the menu
-                        PrintMenu();
+                        PrintMenu(headerText);
                         // Return the selected index
                         return index;
                 }
                 // Reprint the menu
-                PrintMenu();
+                PrintMenu(headerText);
             } while (true);
         }
 
@@ -244,22 +256,12 @@
         {
             AsciiArt.PrintHeader();
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
             if (accounts.Count > 0)
             {
-                foreach (AccountModel account in accounts)
+                string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
+                foreach (string acc in accArray)
                 {
-                    //Console.WriteLine($"{account.name}, {account.currency_id}, {currencies.Count}");
-                    int accountCurrencyId = account.currency_id;
-                    BankCurrencyModel accountCurrency = currencies.FirstOrDefault(c => c.id == accountCurrencyId);
-                    if (accountCurrency != null)
-                    {
-                        Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n} {accountCurrency.name}\n");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Currency ID not found");
-                    }
+                    Console.WriteLine($"{acc}\n");
                 }
             }
             else
