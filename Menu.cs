@@ -244,22 +244,12 @@
         {
             AsciiArt.PrintHeader();
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
             if (accounts.Count > 0)
             {
-                foreach (AccountModel account in accounts)
+                string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
+                foreach (string acc in accArray)
                 {
-                    //Console.WriteLine($"{account.name}, {account.currency_id}, {currencies.Count}");
-                    int accountCurrencyId = account.currency_id;
-                    BankCurrencyModel accountCurrency = currencies.FirstOrDefault(c => c.id == accountCurrencyId);
-                    if (accountCurrency != null)
-                    {
-                        Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n} {accountCurrency.name}\n");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Currency ID not found");
-                    }
+                    Console.WriteLine($"{acc}\n");
                 }
             }
             else
