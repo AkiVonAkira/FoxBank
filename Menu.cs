@@ -246,13 +246,25 @@ namespace FoxBank
         {
             Console.Clear();
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
+            List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
             if (accounts.Count > 0)
             {
                 foreach (AccountModel account in accounts)
                 {
-                    Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n}");
+                    //Console.WriteLine($"{account.name}, {account.currency_id}, {currencies.Count}");
+                    int accountCurrencyId = account.currency_id;
+                    BankCurrencyModel accountCurrency = currencies.FirstOrDefault(c => c.id == accountCurrencyId);
+                    if (accountCurrency != null)
+                    {
+                        Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n} {accountCurrency.name}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Currency ID not found");
+                    }
                 }
             }
+
             else
             {
                 Console.WriteLine("No Accounts found!");
@@ -264,8 +276,7 @@ namespace FoxBank
         internal static void Withdraw()
         {
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-
-            string[] accArray = accounts.Select(account => account.name + ": " + String.Format("{0:n}", account.balance)).ToArray();
+            string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
 
             int index = Helper.MenuIndexer(accArray, true);
             if (index == accArray.Length)
