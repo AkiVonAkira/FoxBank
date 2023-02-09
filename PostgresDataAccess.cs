@@ -143,25 +143,18 @@ public class PostgresDataAccess
         }
     }
 
-    internal static List<TransactionModel> TransactionHistory(int from_account_id)
+    internal static List<TransactionModel> TransactionHistory(int account_id)
     {
         using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
         {
             {
-                var output = cnn.Query<TransactionModel>($@"SELECT name,amount FROM bank_transaction  WHERE from_account_id = {from_account_id}", new DynamicParameters());
+                var output = cnn.Query<TransactionModel>($@"SELECT * FROM bank_transaction  WHERE from_account_id = {account_id} OR to_account_id = {account_id} ORDER BY timestamp DESC", new DynamicParameters());
                 return output.ToList();
             }
 
         }
     }
 
-    internal static void PreviousTransactions(int from_account_id)
-    {
-        using (IDbConnection cnn = new NpgsqlConnection(LoadConnectionString()))
-        {
-            var output = cnn.Query<TransactionModel>($@"SELECT name,amount FROM bank_transaction  WHERE id = {from_account_id}", new DynamicParameters());
-        }
-    }
 
     internal static List<BankBranchModel> LoadBankBranchModel()
     {
