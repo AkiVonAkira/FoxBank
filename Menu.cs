@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace FoxBank
+﻿namespace FoxBank
 {
     internal class Menu
     {
@@ -22,6 +20,7 @@ namespace FoxBank
         {
             // Clear the console before printing the menu
             Console.Clear();
+            AsciiArt.PrintMenuHeader();
             // Iterate through the menu items array
             for (int i = 0; i < _menuItems.Length; i++)
             {
@@ -29,6 +28,7 @@ namespace FoxBank
                 Console.ForegroundColor = i == _selectedIndex ? ConsoleColor.Green : ConsoleColor.White;
                 // Print the menu item with a arrow symbol in front of the selected item
                 Console.WriteLine(i == _selectedIndex ? $"↪ {_menuItems[i]}" : $"  {_menuItems[i]}  ");
+                Console.WriteLine();
             }
             // Reset the console color to its default value
             Console.ResetColor();
@@ -86,7 +86,7 @@ namespace FoxBank
         internal static void SignInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut", "Exit" });
+            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut - Open Account on ID 3", "Exit" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -106,6 +106,7 @@ namespace FoxBank
                         break;
                     case 1:
                         //dev shortcut
+                        LoggedInUserID = 3;
                         OpenAccount();
                         break;
                     case 2:
@@ -178,7 +179,7 @@ namespace FoxBank
             List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
             string[] currencyArray = currencies.Select(currency => currency.name).ToArray();
             int currencyIndex = Helper.MenuIndexer(currencyArray, true);
-            if (accountIndex == accountArray.Length) { OpenAccount(); }
+            if (currencyIndex == currencyArray.Length) { OpenAccount(); }
 
             int accountCurrencyId = currencies[currencyIndex].id;
 
@@ -186,8 +187,12 @@ namespace FoxBank
 
             PostgresDataAccess.CreateAccountModel(accountName, balance, accountInterestRate, LoggedInUserID, accountCurrencyId);
             Helper.Delay();
-            Console.WriteLine($"{accountName} Opened with {balance.ToString():n} {currencies[currencyIndex].name}");
+            AsciiArt.PrintHeader();
+            Console.WriteLine($"\n-------------------------------------------------\n\n" +
+                $"{accountName} Opened with {balance:n} {currencies[currencyIndex].name}\n\n" +
+                $"-------------------------------------------------\n");
             Helper.EnterToContinue();
+            LoggedInMenu();
         }
 
         //Method to check email and pin when signing in
@@ -195,17 +200,10 @@ namespace FoxBank
         {
             Console.Clear();
             List<UserModel> users = PostgresDataAccess.LoadUserModel();
-            Console.WriteLine("Enter email & password");
-            Console.Write("Email: ");
-            string email = Console.ReadLine();
-            Console.Write("Pin: ");
-            if (!int.TryParse(Console.ReadLine(), out int pin))
-            {
-                Console.WriteLine("You did not enter a number");
-                Helper.EnterToContinue();
-                return;
-            }
-
+            AsciiArt.PrintHeader();
+            Console.WriteLine("Enter Email & Pin");
+            string email = Helper.InputStringValidator("Email: ");
+            int pin = Helper.PinInput("Pin: ");
             int counter = 0;
             //Loops every user in UserModel to check for email and pin match.
             foreach (UserModel user in users)
@@ -213,8 +211,8 @@ namespace FoxBank
                 counter++;
                 if (user.bank_email.Equals(email) && user.pin_code == pin)
                 {
-                    Helper.Delay();
-                    AsciiWelcome.PrintWelcome(user.first_name.ToString(), user.last_name.ToString());
+                    Helper.Delay(1500);
+                    AsciiArt.PrintLoginWelcome(user.first_name.ToString(), user.last_name.ToString());
                     LoggedInUserID = user.id;
                     Helper.EnterToContinue();
                     List<BankRoleModel> roles = PostgresDataAccess.LoadBankRoleModel();
@@ -244,7 +242,7 @@ namespace FoxBank
 
         internal static void ShowBalance()
         {
-            Console.Clear();
+            AsciiArt.PrintHeader();
             List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
             List<BankCurrencyModel> currencies = PostgresDataAccess.LoadCurrencyModel();
             if (accounts.Count > 0)
@@ -256,7 +254,7 @@ namespace FoxBank
                     BankCurrencyModel accountCurrency = currencies.FirstOrDefault(c => c.id == accountCurrencyId);
                     if (accountCurrency != null)
                     {
-                        Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n} {accountCurrency.name}");
+                        Console.WriteLine($"ID: {account.id} Name: {account.name} Balance: {account.balance:n} {accountCurrency.name}\n");
                     }
                     else
                     {
@@ -264,7 +262,6 @@ namespace FoxBank
                     }
                 }
             }
-
             else
             {
                 Console.WriteLine("No Accounts found!");

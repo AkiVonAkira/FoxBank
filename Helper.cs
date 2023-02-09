@@ -133,6 +133,50 @@
             return userInput;
         }
 
+        public static int PinInput(string prompt)
+        {
+            Console.Write(prompt);
+            ConsoleKeyInfo key;
+            string pin = "";
+            int result;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                // If the key is not a backspace or enter, add it to the PIN string if it is numeric
+                if (
+                    key.Key != ConsoleKey.Backspace &&
+                    key.Key != ConsoleKey.Enter &&
+                    char.IsDigit(key.KeyChar)
+                )
+                {
+                    pin += key.KeyChar;
+                    Console.Write("•");
+                }
+                // If the key is a backspace, remove the last character from the PIN string
+                else if (key.Key == ConsoleKey.Backspace && pin.Length > 0)
+                {
+                    pin = pin.Substring(0, pin.Length - 1);
+                    Console.Write("\b \b");
+                }
+            }
+            while (key.Key != ConsoleKey.Enter);
+
+            Console.WriteLine();
+
+            // Check if the input can be parsed to an integer
+            if (int.TryParse(pin, out result))
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                return PinInput(prompt);
+            }
+        }
+
         internal static string[] GetUserAccountInformation(int userId)
         {
             // Load the accounts for the logged-in user
@@ -156,7 +200,6 @@
                 }
             }).ToArray();
 
-            return accArray;
         }
 
         // This method returns the index of the selected menu item from an array of strings
@@ -178,31 +221,54 @@
             return index;
         }
 
-        internal static void Delay()
+        internal static void Delay(int waitTime = 2625, bool canSkip = false)
         {
-            int delay = 0;
-            for (int i = 0; delay < 15; i++)
+            int maxDots = 15;
+            int dotDelay = (waitTime / maxDots) - 1;
+            int elapsedTime = 0;
+            int dotsPrinted = 0;
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            while (elapsedTime < waitTime)
             {
-                delay++;
-                Console.Write(".");
-                Thread.Sleep(175);
-                if (delay > 10)
+                if (canSkip)
                 {
-                    delay++;
-                    Console.Write(".");
-                    Thread.Sleep(75);
+                    // If a key has been pressed, break out of the loop
+                    if (Console.KeyAvailable)
+                    {
+                        Console.ReadKey(true); // Read the key and discard it
+                        break;
+                    }
                 }
+                Console.Write(".");
+                dotsPrinted++;
+                elapsedTime = (int)stopwatch.ElapsedMilliseconds;
+
+                if (elapsedTime >= waitTime || dotsPrinted >= maxDots)
+                {
+                    break;
+                }
+
+                Thread.Sleep(dotDelay);
             }
-            Console.Write($"\u2713\n");
+
+            Console.Write("\u2713\n\n");
             Thread.Sleep(600);
         }
 
         internal static void EnterToContinue()
         {
-            Console.Write("\nPress enter to continue...");
-            Console.ReadLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("\n↪ Press Enter to Continue...");
+            Console.ResetColor();
+
+            ConsoleKeyInfo key;
+            do
+            {
+                key = Console.ReadKey(true);
+            }
+            while (key.Key != ConsoleKey.Enter);
         }
-
-
     }
 }
