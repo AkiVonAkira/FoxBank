@@ -98,7 +98,8 @@
         internal static void SignInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut - Open Account on ID 3", "Exit" });
+            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut - Open Account on ID 1",
+                "Dev Shortcut - Open Account on ID 3", "Dev Shortcut - Create User", "Exit" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -118,10 +119,19 @@
                         break;
                     case 1:
                         //dev shortcut
-                        LoggedInUserID = 3;
+                        LoggedInUserID = 1;
                         OpenAccount();
                         break;
                     case 2:
+                        //dev shortcut
+                        LoggedInUserID = 3;
+                        OpenAccount();
+                        break;
+                    case 3:
+                        //dev shortcut
+                        AdminMenu.CreateUser();
+                        break;
+                    case 4:
                         Environment.Exit(0);
                         break;
                     // If the selected index is none of the above
@@ -284,7 +294,7 @@
             }
             else
             {
-                Console.Clear();
+                AsciiArt.PrintHeader();
                 int accountId = accounts[index].id;
                 Console.WriteLine($"\nYou selected {accArray[index]}.");
                 Console.WriteLine("Enter amount to withdraw: ");

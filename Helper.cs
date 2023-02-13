@@ -189,13 +189,13 @@ namespace FoxBank
                 // If a currency was found, return the account information with the currency name
                 if (currency != null)
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    return account.name + ": " +
                     String.Format("{0:n}", account.balance) + " " + currency.name;
                 }
                 // If no currency was found, return the account information with a message indicating that the currency was not found
                 else
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    return account.name + ": " +
                     String.Format("{0:n}", account.balance) + " (Currency not found)";
                 }
             }).ToArray();
