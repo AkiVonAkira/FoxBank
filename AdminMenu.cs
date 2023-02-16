@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using FoxBank.Models;
+
+namespace FoxBank
 {
     internal class AdminMenu
     {

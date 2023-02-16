@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using FoxBank.Models;
+
+namespace FoxBank
 {
     internal class Menu
     {
@@ -165,7 +167,7 @@
                         ShowBalance();
                         break;
                     case 1:
-                        Helper.Transfer();
+                        Transaction.Transfer();
                         break;
                     case 2:
                         Withdraw();
@@ -271,7 +273,7 @@
                 string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
                 foreach (string acc in accArray)
                 {
-                    Console.WriteLine($"{acc}\n");
+                    Console.WriteLine($"\n{acc}");
                 }
             }
             else
@@ -296,19 +298,14 @@
             {
                 AsciiArt.PrintHeader();
                 int accountId = accounts[index].id;
-                Console.WriteLine($"\nYou selected {accArray[index]}.");
-                Console.WriteLine("Enter amount to withdraw: ");
-                if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
-                {
-                    Console.WriteLine("You did not enter a valid input");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
-                }
+                Console.WriteLine($"You Selected: \n{accArray[index]}\n");
+                decimal amount = Helper.InputDecimalValidator("Enter amount to Withdraw: ");
                 bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
                 if (success)
                 {
-
-                    Console.WriteLine("Withdraw successful");
+                    Console.WriteLine();
+                    Helper.Delay();
+                    Console.WriteLine($"Withdraw Succesfull!");
                     Helper.EnterToContinue();
                     LoggedInMenu();
                 }

@@ -11,9 +11,7 @@ class Program
     private static void LoadProgram()
     {
         AsciiArt.PrintWelcome();
-
         Helper.Delay(6000, true);
-
         Menu.SignInMenu();
     }
 }
