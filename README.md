@@ -1,3 +1,8 @@
+## Welcome to FoxBank!
+
+https://user-images.githubusercontent.com/112638774/219426843-9476d7fe-6217-46b1-8ab2-771bbc069756.mp4
+
+
 ## Contributors
 
 <table>
