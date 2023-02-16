@@ -1,4 +1,6 @@
-﻿namespace FoxBank
+﻿using FoxBank.Models;
+
+namespace FoxBank
 {
     internal class Menu
     {
@@ -98,7 +100,8 @@
         internal static void SignInMenu()
         {
             // Create an instance of the Menu class with the options "Sign In", "Create New User", "Exit"
-            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut - Open Account on ID 3", "Exit" });
+            Menu mainMenu = new Menu(new string[] { "Sign In", "Dev Shortcut - Open Account on ID 1",
+                "Dev Shortcut - Open Account on ID 3", "Dev Shortcut - Create User", "Exit" });
             // Print the menu to the console
             mainMenu.PrintMenu();
 
@@ -118,10 +121,19 @@
                         break;
                     case 1:
                         //dev shortcut
-                        LoggedInUserID = 3;
+                        LoggedInUserID = 1;
                         OpenAccount();
                         break;
                     case 2:
+                        //dev shortcut
+                        LoggedInUserID = 3;
+                        OpenAccount();
+                        break;
+                    case 3:
+                        //dev shortcut
+                        AdminMenu.CreateUser();
+                        break;
+                    case 4:
                         Environment.Exit(0);
                         break;
                     // If the selected index is none of the above
@@ -152,13 +164,13 @@
                 switch (index)
                 {
                     case 0:
-                        ShowBalance();
+                        Transaction.ShowBalance();
                         break;
                     case 1:
-                        Helper.Transfer();
+                        Transaction.Transfer();
                         break;
                     case 2:
-                        Withdraw();
+                        Transaction.Withdraw();
                         break;
                     case 3:
                         TransactionHistory.AccountHistory();
@@ -248,65 +260,6 @@
                     Console.WriteLine("Email or pin-code was not correct.");
                     Helper.EnterToContinue();
                     return;
-                }
-            }
-        }
-
-        internal static void ShowBalance()
-        {
-            AsciiArt.PrintHeader();
-            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            if (accounts.Count > 0)
-            {
-                string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
-                foreach (string acc in accArray)
-                {
-                    Console.WriteLine($"{acc}\n");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No Accounts found!");
-            }
-            Helper.EnterToContinue();
-            LoggedInMenu();
-        }
-
-        internal static void Withdraw()
-        {
-            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
-
-            int index = Helper.MenuIndexer(accArray, true);
-            if (index == accArray.Length)
-            {
-                LoggedInMenu();
-            }
-            else
-            {
-                Console.Clear();
-                int accountId = accounts[index].id;
-                Console.WriteLine($"\nYou selected {accArray[index]}.");
-                Console.WriteLine("Enter amount to withdraw: ");
-                if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
-                {
-                    Console.WriteLine("You did not enter a valid input");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
-                }
-                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
-                if (success)
-                {
-
-                    Console.WriteLine("Withdraw successful");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
-                }
-                else
-                {
-                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
                 }
             }
         }

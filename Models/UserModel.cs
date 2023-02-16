@@ -1,4 +1,4 @@
-﻿namespace FoxBank
+﻿namespace FoxBank.Models
 {
     internal class UserModel
     {

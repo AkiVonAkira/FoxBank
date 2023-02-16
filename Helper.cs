@@ -1,89 +1,10 @@
-﻿using System.Diagnostics;
+﻿using FoxBank.Models;
+using System.Diagnostics;
 
 namespace FoxBank
 {
     public static class Helper
     {
-        internal static void Transfer()
-        {
-            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
-            string[] myArray = GetUserAccountInformation(Menu.LoggedInUserID);
-            string[] transferMenu = { "Transfer To Self", "Transfer To Other" };
-            int index = Helper.MenuIndexer(myArray, true);
-            if (index == myArray.Length) { Menu.LoggedInMenu(); }
-            else
-            {
-                AsciiArt.PrintHeader();
-                int from_accountId = accounts[index].id;
-                Console.WriteLine($"\nTransfering From: \n{myArray[index]}");
-                // remove the selected menu item from the array
-                myArray = myArray.Where(o => o != myArray[index]).ToArray();
-                EnterToContinue();
-                int TransferIndex = MenuIndexer(transferMenu, true);
-                if (TransferIndex == 0)
-                {
-                    int index2 = Helper.MenuIndexer(myArray, true);
-                    if (index2 == myArray.Length)
-                    {
-                        Menu.LoggedInMenu();
-                    }
-                    int to_accountId = accounts[index2].id;
-
-                    AsciiArt.PrintHeader();
-                    Console.WriteLine($"\nTransfering To: \n{myArray[index2]}");
-                    decimal amount = InputDecimalValidator("Enter amount to transfer: ");
-                    bool success = PostgresDataAccess.MoneyTransfer(from_accountId, to_accountId, amount);
-                    if (success)
-                    {
-                        Delay();
-                        Console.WriteLine("Transaction complete");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Transaction Failed, Not Enough Funds");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-                    }
-                }
-                else if (TransferIndex == 1)
-                {
-                    List<UserModel> users = PostgresDataAccess.LoadUserModel();
-                    int user = InputIntValidator("Write in the Account Number (ID) you want to transfer to: ");
-                    decimal amount = InputDecimalValidator("Enter amount to transfer: ");
-                    int pin = PinInput("Enter your pin-code to verify: ");
-                    int currentUserID = Menu.LoggedInUserID;
-                    var currentUser = users.FirstOrDefault(u => u.id == currentUserID);
-
-                    if (pin == currentUser.pin_code)
-                    {
-                        bool success = PostgresDataAccess.MoneyTransferOther(from_accountId, user, amount);
-                        if (success)
-                        {
-                            Console.WriteLine();
-                            Delay();
-                            Console.WriteLine("Transaction complete");
-                            EnterToContinue();
-                            Menu.LoggedInMenu();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Transaction Failer, Not Enough Funds");
-                            EnterToContinue();
-                            Menu.LoggedInMenu();
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("You did not enter a valid input or incorrect pin");
-                        EnterToContinue();
-                        Menu.LoggedInMenu();
-                    }
-                }
-            }
-        }
-
         internal static string InputStringValidator(string prompt)
         {
             string userInput = "";
@@ -189,13 +110,13 @@ namespace FoxBank
                 // If a currency was found, return the account information with the currency name
                 if (currency != null)
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    return account.name + ": " +
                     String.Format("{0:n}", account.balance) + " " + currency.name;
                 }
                 // If no currency was found, return the account information with a message indicating that the currency was not found
                 else
                 {
-                    return " - Account Number (ID): " + account.id + "\n" + account.name + ": " +
+                    return account.name + ": " +
                     String.Format("{0:n}", account.balance) + " (Currency not found)";
                 }
             }).ToArray();
