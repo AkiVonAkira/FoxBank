@@ -85,5 +85,59 @@ namespace FoxBank
                 }
             }
         }
+
+        internal static void ShowBalance()
+        {
+            AsciiArt.PrintHeader();
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
+            if (accounts.Count > 0)
+            {
+                string[] accArray = Helper.GetUserAccountInformation(Menu.LoggedInUserID);
+                foreach (string acc in accArray)
+                {
+                    Console.WriteLine($"\n{acc}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No Accounts found!");
+            }
+            Helper.EnterToContinue();
+            Menu.LoggedInMenu();
+        }
+
+        internal static void Withdraw()
+        {
+            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(Menu.LoggedInUserID);
+            string[] accArray = Helper.GetUserAccountInformation(Menu.LoggedInUserID);
+
+            int index = Helper.MenuIndexer(accArray, true);
+            if (index == accArray.Length)
+            {
+                Menu.LoggedInMenu();
+            }
+            else
+            {
+                AsciiArt.PrintHeader();
+                int accountId = accounts[index].id;
+                Console.WriteLine($"You Selected: \n{accArray[index]}\n");
+                decimal amount = Helper.InputDecimalValidator("Enter amount to Withdraw: ");
+                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
+                if (success)
+                {
+                    Console.WriteLine();
+                    Helper.Delay();
+                    Console.WriteLine($"Withdraw Succesfull!");
+                    Helper.EnterToContinue();
+                    Menu.LoggedInMenu();
+                }
+                else
+                {
+                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
+                    Helper.EnterToContinue();
+                    Menu.LoggedInMenu();
+                }
+            }
+        }
     }
 }

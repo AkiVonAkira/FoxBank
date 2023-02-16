@@ -164,13 +164,13 @@ namespace FoxBank
                 switch (index)
                 {
                     case 0:
-                        ShowBalance();
+                        Transaction.ShowBalance();
                         break;
                     case 1:
                         Transaction.Transfer();
                         break;
                     case 2:
-                        Withdraw();
+                        Transaction.Withdraw();
                         break;
                     case 3:
                         TransactionHistory.AccountHistory();
@@ -260,60 +260,6 @@ namespace FoxBank
                     Console.WriteLine("Email or pin-code was not correct.");
                     Helper.EnterToContinue();
                     return;
-                }
-            }
-        }
-
-        internal static void ShowBalance()
-        {
-            AsciiArt.PrintHeader();
-            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            if (accounts.Count > 0)
-            {
-                string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
-                foreach (string acc in accArray)
-                {
-                    Console.WriteLine($"\n{acc}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No Accounts found!");
-            }
-            Helper.EnterToContinue();
-            LoggedInMenu();
-        }
-
-        internal static void Withdraw()
-        {
-            List<AccountModel> accounts = PostgresDataAccess.LoadUserAccount(LoggedInUserID);
-            string[] accArray = Helper.GetUserAccountInformation(LoggedInUserID);
-
-            int index = Helper.MenuIndexer(accArray, true);
-            if (index == accArray.Length)
-            {
-                LoggedInMenu();
-            }
-            else
-            {
-                AsciiArt.PrintHeader();
-                int accountId = accounts[index].id;
-                Console.WriteLine($"You Selected: \n{accArray[index]}\n");
-                decimal amount = Helper.InputDecimalValidator("Enter amount to Withdraw: ");
-                bool success = PostgresDataAccess.AccountWithdraw(accountId, amount);
-                if (success)
-                {
-                    Console.WriteLine();
-                    Helper.Delay();
-                    Console.WriteLine($"Withdraw Succesfull!");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
-                }
-                else
-                {
-                    Console.WriteLine("Withdraw Failed, Not Enough Moneyz");
-                    Helper.EnterToContinue();
-                    LoggedInMenu();
                 }
             }
         }
