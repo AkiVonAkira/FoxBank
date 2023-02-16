@@ -1,0 +1,67 @@
+DROP TABLE IF EXISTS "public"."bank_user";
+DROP TABLE IF EXISTS "public"."bank_role";
+DROP TABLE IF EXISTS "public"."bank_branch";
+DROP TABLE IF EXISTS "public"."bank_loan";
+DROP TABLE IF EXISTS "public"."bank_currency";
+DROP TABLE IF EXISTS "public"."bank_account";
+DROP TABLE IF EXISTS "public"."bank_transaction";
+CREATE TABLE "public"."bank_user" ( 
+  "id" SERIAL,
+  "first_name" VARCHAR(50) NOT NULL,
+  "last_name" VARCHAR(50) NOT NULL,
+  "pin_code" INTEGER NOT NULL,
+  "role_id" INTEGER NOT NULL,
+  "branch_id" INTEGER NOT NULL,
+  "bank_email" VARCHAR(250) NOT NULL,
+  CONSTRAINT "user_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "unique_email" UNIQUE ("bank_email")
+);
+CREATE TABLE "public"."bank_role" ( 
+  "id" SERIAL,
+  "name" VARCHAR(20) NOT NULL,
+  "is_admin" BOOLEAN NOT NULL,
+  "is_client" BOOLEAN NOT NULL,
+  CONSTRAINT "bank_role_pkey" PRIMARY KEY ("id")
+);
+CREATE TABLE "public"."bank_branch" ( 
+  "id" SERIAL,
+  "name" VARCHAR(20) NOT NULL,
+  CONSTRAINT "bank_branch_pkey" PRIMARY KEY ("id")
+);
+CREATE TABLE "public"."bank_loan" ( 
+  "id" SERIAL,
+  "name" VARCHAR(20) NOT NULL,
+  "interest_rate" NUMERIC NOT NULL,
+  "user_id" INTEGER NOT NULL,
+  CONSTRAINT "bank_loan_pkey" PRIMARY KEY ("id")
+);
+CREATE TABLE "public"."bank_currency" ( 
+  "id" SERIAL,
+  "name" VARCHAR(3) NOT NULL,
+  "exchange_rate" NUMERIC NOT NULL,
+  CONSTRAINT "bank_currency_pkey" PRIMARY KEY ("id")
+);
+CREATE TABLE "public"."bank_account" ( 
+  "id" SERIAL,
+  "name" VARCHAR(50) NOT NULL,
+  "balance" NUMERIC NOT NULL DEFAULT 0 ,
+  "interest_rate" NUMERIC NOT NULL DEFAULT 0 ,
+  "user_id" INTEGER NOT NULL,
+  "currency_id" INTEGER NOT NULL DEFAULT 2 ,
+  CONSTRAINT "account_pkey" PRIMARY KEY ("id")
+);
+CREATE TABLE "public"."bank_transaction" ( 
+  "id" SERIAL,
+  "name" VARCHAR(50) NOT NULL,
+  "from_account_id" INTEGER NULL,
+  "to_account_id" INTEGER NULL,
+  "timestamp" TIMESTAMP NOT NULL DEFAULT now() ,
+  "amount" NUMERIC NOT NULL,
+  CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
+);
+ALTER TABLE "public"."bank_user" ADD CONSTRAINT "fk_user_role" FOREIGN KEY ("role_id") REFERENCES "public"."bank_role" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "public"."bank_user" ADD CONSTRAINT "fk_user_branch" FOREIGN KEY ("branch_id") REFERENCES "public"."bank_branch" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "public"."bank_account" ADD CONSTRAINT "fk_currency" FOREIGN KEY ("currency_id") REFERENCES "public"."bank_currency" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "public"."bank_account" ADD CONSTRAINT "fk_user" FOREIGN KEY ("user_id") REFERENCES "public"."bank_user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "public"."bank_transaction" ADD CONSTRAINT "fk_from_account" FOREIGN KEY ("from_account_id") REFERENCES "public"."bank_account" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "public"."bank_transaction" ADD CONSTRAINT "fk_to_account" FOREIGN KEY ("to_account_id") REFERENCES "public"."bank_account" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
