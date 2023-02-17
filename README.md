@@ -15,6 +15,17 @@
 
 FoxBank is a comprehensive console banking application designed to facilitate a variety of financial operations, including account creation, deposits, and transfers. The application is powered by a Postgres database that securely stores all user account details and transaction records. Developed as a school project to enhance students' proficiency in C# programming and database connectivity, FoxBank is designed to offer a seamless and efficient banking experience to its users.
 
+## Key Features
+
+The following features are currently available in the system:
+
+- View account balance.
+- Transfer money between own accounts.
+- Transfer money to others.
+- Different Roles/Permissions (Client, Admin)
+- Transaction History.
+- Currency Exchange: This feature is partially implemented where the accounts can have different currency and is being displayed however no calculations are being done to convert during transfer.
+
 ## The Code
 |**Class**|**Breakdown**|
 |-|-|
